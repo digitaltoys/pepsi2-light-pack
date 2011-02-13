@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/error.png</file>
+        <file>icons/off.png</file>
+        <file>icons/on.png</file>
+        <file>icons/settings.png</file>
+        <file>icons/Lightpack.png</file>
+        <file>translations/ru_RU.qm</file>
+    </qresource>
+</RCC>
