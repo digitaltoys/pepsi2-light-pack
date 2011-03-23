@@ -1,0 +1,15 @@
+Hardware/[^.]+\.[s,d,b]#\d
+Hardware/[^.]+\.pro
+Hardware/[^.]+\.epf
+Firmware/obj/
+Firmware/.dep/
+Software/build/
+Software/moc/
+Software/obj/
+Software/ui/
+Software/res/qrc_[^.]+.cpp
+Software/[^.]+.pro.user
+Software/Makefile
+Lightpack-Software-linux-x86_64-build/
+Lightpack-Software-linux-x86-build/
+Lightpack-Software-win32-build/
