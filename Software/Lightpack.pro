@@ -47,7 +47,6 @@ MOC_DIR     = stuff
 UI_DIR      = stuff
 RCC_DIR     = stuff
 
-
 # Find currect mercurial revision
 HG_REVISION = $$system(hg id -i)
 
@@ -81,8 +80,14 @@ win32 {
     SOURCES += hidapi/windows/hid.cpp
     # Windows version using WinAPI + GDI for grab colors
     LIBS    += -lgdi32
-    SOURCES += grab/grab_winapi.cpp
-    SOURCES += grab/grab_qt.cpp
+    LIBS    += -ld3d9
+    INCLUDEPATH += "C:\Program Files\Microsoft DirectX SDK (June 2010)\Include"
+
+    HEADERS += capture/CaptureSourceWindowsDirect3D9.hpp
+    HEADERS += capture/CaptureSourceWindowsWinApi.hpp
+
+    SOURCES += capture/CaptureSourceWindowsDirect3D9.cpp
+    SOURCES += capture/CaptureSourceWindowsWinApi.cpp
 }
 
 unix:!macx{
@@ -99,7 +104,7 @@ macx{
     SOURCES += grab/grab_qt.cpp
 }
 
-INCLUDEPATH += ./inc ./hidapi ./grab
+INCLUDEPATH += ./inc ./hidapi ./capture
 SOURCES += src/main.cpp \
     src/mainwindow.cpp \
     src/ambilightusb.cpp \
@@ -107,7 +112,9 @@ SOURCES += src/main.cpp \
     src/grabmanager.cpp \
     src/movemewidget.cpp \
     src/settings.cpp \
-    src/speedtest.cpp
+    src/speedtest.cpp \
+    capture/CaptureSourceBase.cpp \
+    capture/CaptureSourceQtGrabWindow.cpp
 HEADERS += hidapi/hidapi.h \
     ../CommonHeaders/commands.h \
     ../CommonHeaders/RGB.h \
@@ -123,7 +130,12 @@ HEADERS += hidapi/hidapi.h \
     inc/struct_rgb.h \
     inc/debug.h \
     inc/speedtest.h \
-    grab/grab_api.h
+    src/ComputeColor.hpp \
+    capture/Capture.hpp \
+    capture/CaptureSourceBase.hpp \
+    capture/ICaptureSource.hpp \
+    capture/IListenerCallback.hpp \
+    capture/CaptureSourceQtGrabWindow.hpp
 FORMS += src/mainwindow.ui \
     src/aboutdialog.ui \
     src/movemewidget.ui

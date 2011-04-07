@@ -1,15 +1,13 @@
 /*
- * grab_winapi.cpp
+ * CaptureSourceWindowsWinApi.cpp
  *
- *  Created on: 9.03.2011
- *      Author: Mike Shatohin (brunql)
+ *  Created on: 7.04.2011
+ *     Authors: Mike Shatohin && Michail Karpelyansky
  *     Project: Lightpack
  *
  *  Lightpack is very simple implementation of the backlight for a laptop
  *
  *  Copyright (c) 2011 Mike Shatohin, mikeshatohin [at] gmail.com
- *
- *  Thanks Amblone project for WinAPI grab example: http://amblone.com/
  *
  *  Lightpack is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,75 +24,23 @@
  *
  */
 
-#include <QtDebug>
 #include "debug.h"
 
 
-#define WINVER 0x0500 /* Windows2000 for MonitorFromWindow(..) func */
-#include <windows.h>
-#include <cmath>
+#include "CaptureSourceWindowsWinApi.hpp"
 
-#include "grab_api.h"
-
-namespace GrabWinAPI
+void CaptureSourceWindowsWinApi::Capture()
 {
-
-// Position of monitor, initialize in captureScreen() using in getColor()
-MONITORINFO monitorInfo;
-
-// Size of screen in pixels, initialize in captureScreen() using in getColor()
-unsigned screenWidth;
-unsigned screenHeight;
-
-// Captured screen buffer, contains actual RGB data in reversed order
-BYTE * pbPixelsBuff = NULL;
-unsigned pixelsBuffSize;
-unsigned bytesPerPixel;
-
-HWND hWndForFindMonitor = NULL;
-bool updateScreenAndAllocateMemory = true;
-
-HDC hScreenDC;
-HDC hMemDC;
-HBITMAP hBitmap;
-
-// If grab precision == 2, then using only every 4-th pixel of grabbing area
-int grabPrecision = 1;
-
-//
-// Save winId for find screen/monitor what will using for full screen capture
-//
-void findScreenOnNextCapture( WId winId )
-{
-    DEBUG_LOW_LEVEL << Q_FUNC_INFO;
-
-    // Save HWND of widget for find monitor
-    hWndForFindMonitor = winId;
-
-    // Next time captureScreen will allocate mem for pbPixelsBuff and update pixelsBuffSize, bytesPerPixel    
-    updateScreenAndAllocateMemory = true;
-}
+    if (m_listeners.empty())
+        return;
 
 
-//
-// Capture screen what contains firstLedWidget to pbPixelsBuff
-//
-void captureScreen()
-{    
-    DEBUG_HIGH_LEVEL << Q_FUNC_INFO;
+    for(m_listeners)
+        m_listeners[0]->screenInfo->alreadyCaptured
 
-    if( updateScreenAndAllocateMemory ){        
-        // Find the monitor, what contains firstLedWidget
-        HMONITOR hMonitor = MonitorFromWindow( hWndForFindMonitor, MONITOR_DEFAULTTONEAREST );
 
-        ZeroMemory( &monitorInfo, sizeof(MONITORINFO) );
-        monitorInfo.cbSize = sizeof(MONITORINFO);
 
-        // Get position and resolution of the monitor
-        GetMonitorInfo( hMonitor, &monitorInfo );
-
-        screenWidth  = monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left;
-        screenHeight = monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top;
+    if( updateScreenAndAllocateMemory ){
 
         DEBUG_LOW_LEVEL << Q_FUNC_INFO << "screenWidth x screenHeight" << screenWidth << "x" << screenHeight;
 
@@ -120,13 +66,13 @@ void captureScreen()
 
         DEBUG_LOW_LEVEL << Q_FUNC_INFO << "Allocate memory for pbPixelsBuff and update pixelsBuffSize, bytesPerPixel";
 
-        BITMAP * bmp = new BITMAP;
+        BITMAP bmp;
 
         // Now get the actual Bitmap
-        GetObject( hBitmap, sizeof(BITMAP), bmp );
+        GetObject( hBitmap, sizeof(BITMAP), &bmp );
 
         // Calculate the size the buffer needs to be
-        unsigned pixelsBuffSizeNew = bmp->bmWidthBytes * bmp->bmHeight;
+        unsigned pixelsBuffSizeNew = bmp.bmWidthBytes * bmp.bmHeight;
 
         DEBUG_LOW_LEVEL << Q_FUNC_INFO << "pixelsBuffSize =" << pixelsBuffSizeNew;
 
@@ -140,35 +86,52 @@ void captureScreen()
             pbPixelsBuff = new BYTE[ pixelsBuffSize ];
         }
 
-        // The amount of bytes per pixel is the amount of bits divided by 8
-        bytesPerPixel = bmp->bmBitsPixel / 8;
-
-        if( bytesPerPixel != 4 ){
-            qDebug() << "Not 32-bit mode is not supported!" << bytesPerPixel;
+        if( bmp.bmBitsPixel != 32 ){
+            qDebug() << "Not 32-bit mode is not supported!" << bmp.bmBitsPixel;
         }
-
-        DeleteObject( bmp );
 
         updateScreenAndAllocateMemory = false;
     }
 
     // Get the actual RGB data and put it into pbPixelsBuff
     GetBitmapBits( hBitmap, pixelsBuffSize, pbPixelsBuff );
+
+
+    for( int i = 0; i < m_listeners.count(); i++)
+    {
+        // fill capture buffer with specified values
+
+        m_listeners[i]->callback->updateListenerBuffer(
+                m_listeners[i]->buffer);
+    }
+}
+
+
+
+//
+// Save winId for find screen/monitor what will using for full screen capture
+//
+void findScreenOnNextCapture( WId winId )
+{
+    DEBUG_LOW_LEVEL << Q_FUNC_INFO;
+
+    // Save HWND of widget for find monitor
+    hWndForFindMonitor = winId;
+
+    // Next time captureScreen will allocate mem for pbPixelsBuff and update pixelsBuffSize, bytesPerPixel    
+    updateScreenAndAllocateMemory = true;
 }
 
 
 //
-// Get AVG color of the rect set by 'grabme' widget from captured screen buffer pbPixelsBuff
+// Capture screen what contains firstLedWidget to pbPixelsBuff
 //
-QRgb getColor(const QWidget * grabme)
+void captureScreen()
 {    
     DEBUG_HIGH_LEVEL << Q_FUNC_INFO;
 
-    return getColor(grabme->x(),
-                    grabme->y(),
-                    grabme->width(),
-                    grabme->height());
 }
+
 
 QRgb getColor(int x, int y, int width, int height)
 {
@@ -216,6 +179,7 @@ QRgb getColor(int x, int y, int width, int height)
     unsigned index = 0; // index of the selected pixel in pbPixelsBuff
     unsigned count = 0; // count the amount of pixels taken into account
 
+
     // This is where all the magic happens: calculate the average RGB
     for(int i = x; i < x + width; i += grabPrecision){
         for(int j = y; j < y + height; j += grabPrecision){
@@ -260,21 +224,4 @@ QRgb getColor(int x, int y, int width, int height)
     DEBUG_HIGH_LEVEL << Q_FUNC_INFO << "QRgb result =" << hex << result;
 
     return result;
-}
-
-
-void setGrabPrecision(int precision)
-{
-    DEBUG_LOW_LEVEL << Q_FUNC_INFO << precision;
-
-    grabPrecision = precision;
-}
-
-int getGrabPrecision()
-{
-    DEBUG_LOW_LEVEL << Q_FUNC_INFO << grabPrecision;
-
-    return grabPrecision;
-}
-
 }
