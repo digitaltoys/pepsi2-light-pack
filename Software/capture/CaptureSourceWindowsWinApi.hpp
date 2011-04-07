@@ -1,8 +1,8 @@
 /*
- * grab_api.h
+ * CaptureSourceWindowsWinApi.hpp
  *
- *  Created on: 9.03.2011
- *      Author: Mike Shatohin (brunql)
+ *  Created on: 7.04.2011
+ *     Authors: Mike Shatohin && Michail Karpelyansky
  *     Project: Lightpack
  *
  *  Lightpack is very simple implementation of the backlight for a laptop
@@ -24,34 +24,20 @@
  *
  */
 
-#ifndef GRAB_API_H
-#define GRAB_API_H
+#pragma once
 
-#include <QWidget>
-#include <QColor>
-
-// Using WinAPI:
-//      if grabbing-monitor changed call findScreenOnNextCapture( HWND ) for update buffer size
-//      after it just call captureScreen(), getColor(), ..., getColor() repeatedly
-// Using Qt:
-//      just call getColor(...);
+#include "CaptureSourceBase.hpp"
 
 
-namespace GrabQt
+class CaptureSourceWindowsWinApi : CaptureSourceBase
 {
-    QRgb getColor(const QWidget * grabme);
-    QRgb getColor(int x, int y, int width, int height);
+// ICaptureSource
+public:
+    virtual void Capture();
+
+private:
+    HDC hScreenDC;
+    HDC hMemDC;
+
+    HBITMAP hBitmap;
 };
-
-namespace GrabWinAPI
-{    
-    void findScreenOnNextCapture( WId winId );
-    void captureScreen();
-    QRgb getColor(const QWidget * grabme);
-    QRgb getColor(int x, int y, int width, int height);
-
-    void setGrabPrecision(int precision);
-    int getGrabPrecision();
-};
-
-#endif // GRAB_API_H
