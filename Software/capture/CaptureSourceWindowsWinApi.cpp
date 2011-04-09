@@ -89,6 +89,7 @@ started = GetTickCount();
         for (ListenerInfoIterator it = m_listeners.begin(); it != m_listeners.end(); it++)
         {
             if (it->callback->isListenerCallbackEnabled())
+
             {
                 CaptureBuffer buffer;
                 buffer.width = it->rect.width;
@@ -97,25 +98,7 @@ started = GetTickCount();
                 buffer.dataLength = buffer.width * buffer.height * bytesCount;
                 buffer.data = (uint8_t *)malloc(buffer.dataLength);
 
-                int bufferLineWidth = buffer.width * bytesCount;
-
-                for (int y = 0; y < buffer.height; y++)
-                {
-                    int dstOffset =
-                        y
-                        * bufferLineWidth;
-                    int srcOffset =
-                        bytesCount
-                        * (
-                            (y + it->rect.top - m_rect.top) * m_rect.width
-                            + (it->rect.left - m_rect.left)
-                        );
-
-                    CopyMemory(
-                        buffer.data + dstOffset,
-                        m_data + srcOffset,
-                        bufferLineWidth);/**/
-                }
+                copyToSubBufferData(bytesCount, m_rect, m_data, it->rect, buffer.data);
 
                 it->callback->listenerBufferCallback(buffer);
 

@@ -41,17 +41,30 @@ namespace capture
         ICaptureListenerCallback *callback;
         CaptureRect rect;
 
-        // Buffer contains info grabbed colors for listener
-        //CaptureBuffer buffer;
-
         ListenerInfo()
             : callback(NULL)
         {
         }
     };
 
-    typedef std::list<ListenerInfo>::iterator ListenerInfoIterator;
-    typedef std::list<ListenerInfo>::const_iterator ListenerInfoConstIterator;
+    //struct CaptureScreenInfo
+    //{
+    //    bool alreadyCaptured;
+
+    //    CaptureRect rect;
+
+    //    CaptureBuffer buffer;
+
+    //    //CaptureScreenInfo() : rect(), buffer(), alreadyCaptured(false) { }
+
+    ////    int getId() {
+    ////        return rect.screenId;
+    ////    }
+
+    ////    void setId( int id ) {
+    ////        rect.screenId = id;
+    ////    }
+    //};
 
     class CaptureSourceBase : ICaptureSource
     {
@@ -62,9 +75,16 @@ namespace capture
         CaptureSourceBase();
 
         void recalculateRect();
+        void copyToSubBufferData(
+            const int &bytesCount,
+            const CaptureRect &fromRect, const uint8_t *fromData,
+            const CaptureRect &toRect, uint8_t *toData);
 
     // ICaptureSource
     public:
+        typedef std::list<ListenerInfo>::iterator ListenerInfoIterator;
+        typedef std::list<ListenerInfo>::const_iterator ListenerInfoConstIterator;
+
         virtual void subscribeListener(ICaptureListenerCallback *callback, const CaptureRect &rect);
         virtual bool hasListener(ICaptureListenerCallback *callback) const;
         virtual void updateListener(ICaptureListenerCallback *callback, const CaptureRect &rect);

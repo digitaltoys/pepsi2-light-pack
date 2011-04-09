@@ -31,6 +31,9 @@
 #include "settings.h"
 
 #include "debug.h"
+#include "capturemath.hpp"
+
+using lightpack::capture::math::GetAvgColor;
 
 // Colors changes when middle button clicked
 const QColor MoveMeWidget::colors[MoveMeWidget::ColorsCount][2] = {
@@ -474,6 +477,27 @@ bool MoveMeWidget::isGrabEnabled()
     return ui->checkBox_SelfId->isChecked();
 }
 
+void MoveMeWidget::SetCaptureSource(ICaptureSource *captureSource)
+{
+    if (m_captureSource != 0)
+    {
+        disconnect(this, SIGNAL(resizeOrMoveCompleted(int)), this, SLOT(updateCaptureListener()));
+        m_captureSource->unsubscribeListener(this);
+    }
+
+    if (captureSource != 0)
+    {
+        connect(this, SIGNAL(resizeOrMoveCompleted(int)), this, SLOT(updateCaptureListener()));
+
+        m_captureSource = captureSource;
+        m_captureSource->subscribeListener(this, GetWidgetRect());
+    }
+}
+
+QRgb MoveMeWidget::getColor()
+{
+    return m_color;
+}
 
 void MoveMeWidget::checkAndSetCursors(QMouseEvent *pe)
 {
@@ -504,145 +528,6 @@ void MoveMeWidget::checkAndSetCursors(QMouseEvent *pe)
     }
 }
 
-void MoveMeWidget::checkBoxSelfId_Toggled(bool state)
-{
-    DEBUG_LOW_LEVEL << Q_FUNC_INFO << state;
-
-    setColors(colorIndex); // just update color
-
-    Settings::setValue("LED_" + QString::number(selfId+1) + "/IsEnabled", state);
-}
-
-
-
-
-
-
-
-
-/////
-
-bool MoveMeWidget::isListenerCallbackEnabled()
-{
-    return isGrabEnabled();
-}
-
-void MoveMeWidget::listenerBufferCallback(const CaptureBuffer &buffer)
-{
-    m_color = getColor(buffer);
-}
-
-// todo move to math helper
-QRgb MoveMeWidget::getColor(const CaptureBuffer &buffer)
-{
-    DEBUG_HIGH_LEVEL << Q_FUNC_INFO
-            << "width hight:"
-            << buffer.width << buffer.height;
-
-/*
-    // Checking for the 'grabme' widget position inside the monitor that is used to capture color
-    if( x + width  < monitorInfo.rcMonitor.left   ||
-        x               > monitorInfo.rcMonitor.right  ||
-        y + height < monitorInfo.rcMonitor.top    ||
-        y               > monitorInfo.rcMonitor.bottom ){
-
-        DEBUG_MID_LEVEL << "Widget 'grabme' is out of screen, x y w h:" << x << y << width << height;
-
-        // Widget 'grabme' is out of screen
-        return 0x000000;
-    }
-
-    // Convert coordinates from "Main" desktop coord-system to capture-monitor coord-system
-    x -= monitorInfo.rcMonitor.left;
-    y -= monitorInfo.rcMonitor.top;
-*/
-    // todo use upper code block?
-    /*int x = 0;
-    int y = 0;
-    int width = 0;
-    int height = 0;
-
-    // Ignore part of LED widget which out of screen
-    if (x < 0)
-    {
-        width += x; // reduce width
-        x = 0;
-    }
-
-    if (y < 0)
-    {
-        height += y; //reduce height
-        y = 0;
-    }
-
-   /* if (x + width > (int)screenWidth)
-        width -= (x + width) - screenWidth;
-
-    if (y + height > (int)screenHeight)
-        height -= (y + height) - screenHeight;
-*/
-    /*if (width < 0 || height < 0)
-    {
-        qWarning() << Q_FUNC_INFO << "width < 0 || height < 0:" << width << height;
-
-        // width and height can't be negative
-        return 0x000000;
-    }*/
-
-    int index = 0; // index of the selected pixel in pbPixelsBuff
-    int count = buffer.height * buffer.width; // count the amount of pixels taken into account
-    int bytesCount = buffer.bitsCount / 8;
-    unsigned r = 0, g = 0, b = 0;
-
-    for (int y = 0; y < buffer.height; y += /*grabPrecision*/1)
-    {
-        for (int x = 0; x < buffer.width; x += /*grabPrecision*/1)
-        {
-            index = (y * buffer.width + x) * bytesCount;
-
-            if (index > buffer.dataLength)
-            {
-                //qDebug() << "index out of range pbPixelsBuff[]" << index << x << y << width << height;
-                break;
-            }
-
-            // Get RGB values (stored in reversed order)
-            b += buffer.data[index];
-            g += buffer.data[index + 1];
-            r += buffer.data[index + 2];
-        }
-    }
-
-    if (count != 0)
-    {
-        r = (unsigned)round((double) r / count) & 0xff;
-        g = (unsigned)round((double) g / count) & 0xff;
-        b = (unsigned)round((double) b / count) & 0xff;
-    }
-/* todo move to helper
-#if 0
-    // Save image of screen:
-    QImage * im = new QImage( monitorWidth, monitorHeight, QImage::Format_RGB32 );
-    for(int i=0; i<monitorWidth; i++){
-        for(int j=0; j<monitorHeight; j++){
-            index = (BytesPerPixel * j * monitorWidth) + (BytesPerPixel * i);
-            QRgb rgb = pbPixels[index+2] << 16 | pbPixels[index+1] << 8 | pbPixels[index];
-            im->setPixel(i, j, rgb);
-        }
-    }
-    im->save("screen.jpg");
-    delete im;
-#endif
-*/
-    QRgb result = qRgb(r, g, b);
-
-    DEBUG_HIGH_LEVEL << Q_FUNC_INFO << "QRgb result =" << hex << result;
-
-    return result;
-}
-
-//////////
-
 CaptureRect MoveMeWidget::GetWidgetRect()
 {
     CaptureRect result;
@@ -654,30 +539,28 @@ CaptureRect MoveMeWidget::GetWidgetRect()
     return result;
 }
 
-void MoveMeWidget::UpdateListener()
+void MoveMeWidget::checkBoxSelfId_Toggled(bool state)
+{
+    DEBUG_LOW_LEVEL << Q_FUNC_INFO << state;
+
+    setColors(colorIndex); // just update color
+
+    Settings::setValue("LED_" + QString::number(selfId+1) + "/IsEnabled", state);
+}
+
+void MoveMeWidget::updateCaptureListener()
 {
     m_captureSource->updateListener(this, GetWidgetRect());
 }
 
-void MoveMeWidget::SetCaptureSource(ICaptureSource *captureSource)
+// ICaptureSourceCallback
+
+bool MoveMeWidget::isListenerCallbackEnabled()
 {
-    if (m_captureSource != 0)
-    {
-        m_captureSource->unsubscribeListener(this);
-        // todo disconnect
-    }
-
-    if (captureSource != 0)
-    {
-        // todo
-        connect(this, SIGNAL(resizeOrMoveCompleted(int)), this, SLOT(UpdateListener()));
-
-        m_captureSource = captureSource;
-        m_captureSource->subscribeListener(this, GetWidgetRect());
-    }
+    return isGrabEnabled();
 }
 
-QRgb MoveMeWidget::getColor()
+void MoveMeWidget::listenerBufferCallback(const CaptureBuffer &buffer)
 {
-    return m_color;
+    m_color = GetAvgColor(buffer);
 }
