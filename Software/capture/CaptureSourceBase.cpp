@@ -26,130 +26,155 @@
 
 #include "CaptureSourceBase.hpp"
 
-#include <QApplication>
-#include <QDesktopWidget>
+//#include <QApplication>
+//#include <QDesktopWidget>
 
-#define WINVER 0x0500 /* Windows2000 for MonitorFromWindow(..) func */
-#include <windows.h>
+//#define WINVER 0x0500 /* Windows2000 for MonitorFromWindow(..) func *//*
+//#include <windows.h>
 
-
-CaptureSourceBase::CaptureSourceBase()
+namespace lightpack
 {
-    m_listeners = new QList<Listener *>();
-    m_screens = new QList<CaptureScreenInfo *>();
-}
-
-void CaptureSourceBase::addListener(IListenerCallback *listenerCallback, const CaptureRect &rect)
+namespace capture
 {
-    if(hasListener(listenerCallback)){
-        qWarning() << "Listener already added, rect:" << rect.left << rect.top << rect.width << rect.height;
-        return;
-    }
-
-    Listener * listener = new Listener;
-
-    listener->callback = listenerCallback;
-    listener->rect = rect;
-
-    m_listeners.append(listener);
-
-    updateCaptureScreenRect();
-}
-
-bool CaptureSourceBase::hasListener(IListenerCallback *listenerCallback) const
-{
-    for (int index = 0; index < m_listeners.count(); index++)
+    CaptureSourceBase::CaptureSourceBase()
     {
-        if( listenerCallback == m_listeners[index]->callback ){
-            return true;
-        }
     }
-    return false;
-}
 
-void CaptureSourceBase::updateListener(IListenerCallback *listenerCallback, const CaptureRect &rect)
-{
-    for (int index = 0; index < m_listeners.count(); index++)
+    // ICaptureSource
+
+    void CaptureSourceBase::subscribeListener(ICaptureListenerCallback *callback, const CaptureRect &rect)
     {
-        if( listenerCallback == m_listeners[index]->callback ){
-            m_listeners[index]->rect = rect;
-            break;
+        if (hasListener(callback))
+        {
+            //todoqWarning()
+              //  << "Listener already added for rect:"
+                //<< rect.left << rect.top << rect.width << rect.height;
+            return;
         }
-    }
-   QList<CaptureScreenInfo *>
 
-    updateCaptureScreenRect();
-}
+        ListenerInfo info;
+        info.callback = callback;
+        info.rect = rect;
 
-void CaptureSourceBase::deleteListener(IListenerCallback *listenerCallback)
-{
-    for (int index = 0; index < m_listeners.count(); index++){
+        m_listeners.push_back(info);
 
-        if( listenerCallback == m_listeners[index]->callback ){
-            delete m_listeners.at(i);
-            m_listeners.removeAt(index);
-            break;
-        }
+        recalculateRect();
     }
 
-    updateCaptureScreenRect();
-}
-
-void CaptureSourceBase::deleteAllListeners()
-{
-    for(int i = 0; i < m_listeners.count(); i++){
-        delete m_listeners.at(i);
-        m_listeners.removeAt(i);
-    }
-
-    updateCaptureScreenRect();
-}
-
-void CaptureSourceBase::updateCaptureScreenRect()
-{
-    if(m_listeners.isEmpty()){
-        return;
-    }
-
-    // Initialize screens
-    for(int i = 0; i < m_listeners.count(); i++){
-        Listener * it = m_listeners[0];
-
-        int screenIndex = QApplication::desktop()->screenNumber( it->rect.center() );
-
-
-    }
-
-
-    // Copy
-    m_listeners[0]->screenInfo->rect = m_listeners[0]->rect;
-
-    for(int i = 1; i < m_listeners.count(); i++){
-        CaptureScreenInfo *screen = m_listeners[i]->screenInfo;
-        CaptureRect *captureRect = &m_listeners[i]->rect;
-
-        if(screen->rect.left > captureRect->left){
-            screen->rect.left = captureRect->left;
-        }
-        if(screen->rect.top > captureRect->top){
-            screen->rect.top = captureRect->top;
-        }
-        if(screen->rect.right() > captureRect->right()){
-            screen->rect.setRight( captureRect->right() );
-        }
-        if(screen->rect.bottom() > captureRect->bottom()){
-            screen->rect.setBottom( captureRect->bottom() );
-        }
-    }
-}
-
-void CaptureSourceBase::initializeScreen(int screenId)
-{
-    for(int i = 0; i < m_screens.count(); i++)
+    bool CaptureSourceBase::hasListener(ICaptureListenerCallback *callback) const
     {
-        if(m_screens[i]->rect.screenId == screenId){
-
+        for (ListenerInfoConstIterator it = m_listeners.begin(); it != m_listeners.end(); it++)
+        {
+            if (it->callback == callback)
+                return true;
         }
+        return false;
     }
-}
 
+    void CaptureSourceBase::updateListener(ICaptureListenerCallback *callback, const CaptureRect &rect)
+    {
+        if (!hasListener(callback))
+        {
+            //todoqWarning()
+              //  << "Listener not exists for rect:"
+                //<< rect.left << rect.top << rect.width << rect.height;
+            return;
+        }
+
+        for (ListenerInfoIterator it = m_listeners.begin(); it != m_listeners.end(); it++)
+        {
+            if (it->callback == callback)
+            {
+                it->rect = rect;
+                break;
+            }
+        }
+
+        recalculateRect();
+    }
+
+    void CaptureSourceBase::unsubscribeListener(ICaptureListenerCallback *callback)
+    {
+        if (!hasListener(callback))
+        {
+            //todoqWarning()
+              //  << "Listener not exists for rect:"
+                //<< rect.left << rect.top << rect.width << rect.height;
+            return;
+        }
+
+        for (ListenerInfoIterator it = m_listeners.begin(); it != m_listeners.end(); it++)
+        {
+            if (it->callback == callback)
+            {
+                m_listeners.erase(it);
+                break;
+            }
+        }
+
+        recalculateRect();
+    }
+
+    void CaptureSourceBase::unsubscribeAllListeners()
+    {
+        m_listeners.clear();
+        recalculateRect();
+    }
+
+    void CaptureSourceBase::recalculateRect()
+    {
+        if (m_listeners.size() == 0)
+        {
+            m_rect = CaptureRect();
+            return;
+        }
+
+        // todo check allowed new bound box
+
+        ListenerInfoIterator it = m_listeners.begin();
+        m_rect.left = it->rect.left;
+        m_rect.top = it->rect.top;
+        m_rect.width = it->rect.width;
+        m_rect.height = it->rect.height;
+
+        while (++it != m_listeners.end())
+        {
+            if (it->rect.left < m_rect.left)
+                m_rect.left = it->rect.left;
+
+            if (it->rect.top < m_rect.top)
+                m_rect.top = it->rect.top;
+
+            if (it->rect.getRight() > m_rect.getRight())
+                m_rect.setRight(it->rect.getRight());
+
+            if (it->rect.getBottom() > m_rect.getBottom())
+                m_rect.setBottom(it->rect.getBottom());
+        }
+
+    /*todo    // Initialize screens
+        for(int i = 0; i < m_listeners.count(); i++){
+            Listener * it = m_listeners[0];
+
+            int screenIndex = QApplication::desktop()->screenNumber( it->rect.center() );
+        // Copy
+        m_listeners[0]->screenInfo->rect = m_listeners[0]->rect;
+        for (int i = 1; i < m_listeners.count(); i++)
+        {
+            CaptureScreenInfo *screen = m_listeners[i]->screenInfo;
+            CaptureRect *captureRect = &m_listeners[i]->rect;
+
+..... if .....
+        }*/
+    }
+/*todo
+    void CaptureSourceBase::initializeScreen(int screenId)
+    {
+        for(int i = 0; i < m_screens.count(); i++)
+        {
+            if(m_screens[i]->rect.screenId == screenId){
+            }
+        }
+    }*/
+}
+}

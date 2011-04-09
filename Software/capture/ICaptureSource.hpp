@@ -26,17 +26,23 @@
 
 #pragma once
 
-#include "Capture.hpp"
-#include "IListenerCallback.hpp"
+#include "capture.hpp"
+#include "ICaptureListenerCallback.hpp"
 
-class ICaptureSource
+namespace lightpack
 {
-public:
-    virtual void capture() = 0;
+namespace capture
+{
+class ICaptureSource
+    {
+    public:
+        virtual void capture() = 0;
 
-    virtual void addListener(IListenerCallback *listenerCallback, const CaptureRect &rect) = 0;
-    virtual bool hasListener(IListenerCallback *listenerCallback) const = 0;
-    virtual void updateListener(IListenerCallback *listenerCallback, const CaptureRect &rect) = 0;
-    virtual void deleteListener(IListenerCallback *listenerCallback) = 0;
-    virtual void deleteAllListeners() = 0;
-};
+        virtual void subscribeListener(ICaptureListenerCallback *callback, const CaptureRect &rect) = 0;
+        virtual bool hasListener(ICaptureListenerCallback *callback) const = 0;
+        virtual void updateListener(ICaptureListenerCallback *callback, const CaptureRect &rect) = 0;
+        virtual void unsubscribeListener(ICaptureListenerCallback *callback) = 0;
+        virtual void unsubscribeAllListeners() = 0;
+    };
+}
+}

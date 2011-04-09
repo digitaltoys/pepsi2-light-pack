@@ -26,27 +26,50 @@
 
 #pragma once
 
-#include <QList>
+#include <list>
 
-#include "Capture.hpp"
+#include "capture.hpp"
+#include "ICaptureListenerCallback.hpp"
 #include "ICaptureSource.hpp"
 
-class CaptureSourceBase : ICaptureSource
+namespace lightpack
 {
-protected:
-    QList<Listener *> m_listeners;
-    QList<CaptureScreenInfo *> m_screens;
+namespace capture
+{
+    struct ListenerInfo
+    {
+        ICaptureListenerCallback *callback;
+        CaptureRect rect;
 
-public:
-    CaptureSourceBase();
+        // Buffer contains info grabbed colors for listener
+        //CaptureBuffer buffer;
 
-    virtual void addListener(IListenerCallback *listenerCallback, const CaptureRect &rect);
-    virtual bool hasListener(IListenerCallback *listenerCallback) const;
-    virtual void updateListener(IListenerCallback *listenerCallback, const CaptureRect &rect);
-    virtual void deleteListener(IListenerCallback *listenerCallback);
-    virtual void deleteAllListeners();
+        ListenerInfo()
+            : callback(NULL)
+        {
+        }
+    };
 
-private:
-    void updateCaptureScreenRect();
-    CaptureScreenInfo * initializeScreen(int screenId);
-};
+    typedef std::list<ListenerInfo>::iterator ListenerInfoIterator;
+    typedef std::list<ListenerInfo>::const_iterator ListenerInfoConstIterator;
+
+    class CaptureSourceBase : ICaptureSource
+    {
+    protected:
+        std::list<ListenerInfo> m_listeners;
+        CaptureRect m_rect;
+
+        CaptureSourceBase();
+
+        void recalculateRect();
+
+    // ICaptureSource
+    public:
+        virtual void subscribeListener(ICaptureListenerCallback *callback, const CaptureRect &rect);
+        virtual bool hasListener(ICaptureListenerCallback *callback) const;
+        virtual void updateListener(ICaptureListenerCallback *callback, const CaptureRect &rect);
+        virtual void unsubscribeListener(ICaptureListenerCallback *callback);
+        virtual void unsubscribeAllListeners();
+    };
+}
+}

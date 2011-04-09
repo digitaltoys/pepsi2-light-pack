@@ -80,14 +80,8 @@ win32 {
     SOURCES += hidapi/windows/hid.cpp
     # Windows version using WinAPI + GDI for grab colors
     LIBS    += -lgdi32
-    LIBS    += -ld3d9
-    INCLUDEPATH += "C:\Program Files\Microsoft DirectX SDK (June 2010)\Include"
-
-    HEADERS += capture/CaptureSourceWindowsDirect3D9.hpp
-    HEADERS += capture/CaptureSourceWindowsWinApi.hpp
-
-    SOURCES += capture/CaptureSourceWindowsDirect3D9.cpp
-    SOURCES += capture/CaptureSourceWindowsWinApi.cpp
+    # LIBS    += -ld3d9
+    # INCLUDEPATH += "C:\Program Files\Microsoft DirectX SDK (June 2010)\Include"
 }
 
 unix:!macx{
@@ -114,7 +108,9 @@ SOURCES += src/main.cpp \
     src/settings.cpp \
     src/speedtest.cpp \
     capture/CaptureSourceBase.cpp \
-    capture/CaptureSourceQtGrabWindow.cpp
+    capture/CaptureSourceQtGrabWindow.cpp \
+    capture/CaptureSourceWindowsDirect3D9.cpp \
+    capture/CaptureSourceWindowsWinApi.cpp
 HEADERS += hidapi/hidapi.h \
     ../CommonHeaders/commands.h \
     ../CommonHeaders/RGB.h \
@@ -131,11 +127,13 @@ HEADERS += hidapi/hidapi.h \
     inc/debug.h \
     inc/speedtest.h \
     src/ComputeColor.hpp \
-    capture/Capture.hpp \
+    capture/capture.hpp \
     capture/CaptureSourceBase.hpp \
     capture/ICaptureSource.hpp \
-    capture/IListenerCallback.hpp \
-    capture/CaptureSourceQtGrabWindow.hpp
+    capture/ICaptureListenerCallback.hpp \
+    capture/CaptureSourceQtGrabWindow.hpp \
+    capture/CaptureSourceWindowsDirect3D9.hpp \
+    capture/CaptureSourceWindowsWinApi.hpp
 FORMS += src/mainwindow.ui \
     src/aboutdialog.ui \
     src/movemewidget.ui

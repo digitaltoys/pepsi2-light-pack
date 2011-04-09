@@ -29,13 +29,23 @@
 
 #include <QWidget>
 
+#include "capture.hpp"
+#include "ICaptureSource.hpp"
+#include "ICaptureListenerCallback.hpp"
+#include "CaptureSourceBase.hpp" // todo delete
+
 namespace Ui {
     class MoveMeWidget;
 }
 
-class MoveMeWidget : public QWidget
+using lightpack::capture::CaptureBuffer;
+using lightpack::capture::CaptureRect;
+using lightpack::capture::ICaptureListenerCallback;
+using lightpack::capture::ICaptureSource;
+
+class MoveMeWidget : public QWidget, public ICaptureListenerCallback
 {
-    Q_OBJECT
+Q_OBJECT
 public:
     MoveMeWidget(int id, QWidget *parent = 0);
     ~MoveMeWidget();
@@ -114,6 +124,29 @@ protected:
     virtual void wheelEvent(QWheelEvent *);
     virtual void resizeEvent(QResizeEvent *);
     virtual void paintEvent(QPaintEvent *);
+
+
+
+
+
+// ICaptureListenerCallback
+public:
+    virtual bool isListenerCallbackEnabled();
+    virtual void listenerBufferCallback(const CaptureBuffer &buffer);
+
+private slots:
+    void UpdateListener();
+private:
+    ICaptureSource *m_captureSource;
+    QRgb m_color;
+
+    CaptureRect GetWidgetRect();
+
+    // todo move to math helper
+    QRgb getColor(const CaptureBuffer &buffer);
+public:
+    void SetCaptureSource(ICaptureSource *captureSource);
+    QRgb getColor();
 };
 
 #endif // MOVEMEWIDGET_H

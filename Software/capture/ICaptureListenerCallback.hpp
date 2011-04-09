@@ -1,5 +1,5 @@
 /*
- * CaptureSourceWindowsWinApi.hpp
+ * IListenerCallback.hpp
  *
  *  Created on: 7.04.2011
  *     Authors: Mike Shatohin && Michail Karpelyansky
@@ -26,24 +26,17 @@
 
 #pragma once
 
-#include "CaptureSourceBase.hpp"
+#include "capture.hpp"
 
 namespace lightpack
 {
 namespace capture
 {
-    class CaptureSourceWindowsWinApi : CaptureSourceBase
+    class ICaptureListenerCallback
     {
-    private:
-        int m_dataLength;
-        uint8_t *m_data;
     public:
-        CaptureSourceWindowsWinApi();
-        ~CaptureSourceWindowsWinApi();
-
-    // ICaptureSource
-    public:
-        virtual void capture();
+        virtual bool isListenerCallbackEnabled() = 0;
+        virtual void listenerBufferCallback(const CaptureBuffer &buffer) = 0;
     };
 }
 }

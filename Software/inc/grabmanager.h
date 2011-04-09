@@ -35,6 +35,11 @@
 #include "struct_rgb.h"
 #include "movemewidget.h"
 
+#include "../capture/ICaptureSource.hpp"
+
+using lightpack::capture::ICaptureSource;
+
+
 class GrabManager : public QWidget
 {
     Q_OBJECT
@@ -105,11 +110,20 @@ private: // variables
     // Store last grabbing time in milliseconds
     double fpsMs;
 
-    bool isGrabWinAPI;
-
     // Settings:
     int ambilightDelayMs;
     int colorDepth;
+
+
+
+
+
+    ICaptureSource *m_captureSource;
+
+
+
+
+
 };
 
 #endif // GRAB_MANAGER_H
