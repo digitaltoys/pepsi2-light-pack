@@ -28,8 +28,7 @@
 
 #include "Capture.hpp"
 
-
-class IListenerCallback
+class ICaptureListenerCallback
 {
 public:
     virtual void updateListenerBuffer(const CaptureBuffer *buffer) = 0;

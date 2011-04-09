@@ -70,7 +70,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     aboutDialog = new AboutDialog(this);
 
-    speedTest = new SpeedTest();
+    ////speedTest = new SpeedTest();
 
     profilesFindAll();
 
@@ -799,7 +799,7 @@ void MainWindow::startTestsClick()
     ui->pushButton_StartTests->repaint(); // update right now
 
     // While testing this function freezes GUI
-    speedTest->start();
+   // speedTest->start();
 
     ui->pushButton_StartTests->setText( saveText );
 }
