@@ -226,10 +226,10 @@ void GrabManager::updateLedsColorsIfChanged()
     if (m_captureSource != 0)
     {
         m_captureSource->capture();
-        // todo move functionality to m_ledManager->SendBatch()
+
+        // begin of "move to LedManager"
 
         bool needToUpdate = false;
-
         int avgR = 0, avgG = 0, avgB = 0;
         int countGrabEnabled = 0;
 
@@ -315,6 +315,8 @@ void GrabManager::updateLedsColorsIfChanged()
             // if updateColorsOnlyIfChanges == false, then update colors (not depending on needToUpdate flag)
             emit updateLedsColors( colorsCurrent );
         }
+
+        // end of "move to LedManager"
     }
 
     fpsMs = timeEval->howLongItEnd();

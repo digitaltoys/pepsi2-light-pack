@@ -32,7 +32,6 @@
 #include "capture.hpp"
 #include "ICaptureSource.hpp"
 #include "ICaptureListenerCallback.hpp"
-#include "CaptureSourceBase.hpp" // todo delete
 
 namespace Ui {
     class MoveMeWidget;
@@ -60,6 +59,9 @@ public:
     double getCoefBlue();
     bool isGrabEnabled();
 
+    void SetCaptureSource(ICaptureSource *captureSource);
+    QRgb getColor();
+
 signals:
     void resizeOrMoveStarted();
     void resizeOrMoveCompleted(int id);
@@ -71,12 +73,14 @@ public slots:
 
 private slots:
     void checkBoxSelfId_Toggled(bool state);
+    void updateCaptureListener();
 
 private:
     virtual void closeEvent(QCloseEvent *event);
     double loadCoefWithCheck(QString coefStr);
     void setCursorOnAll(Qt::CursorShape cursor);
     void checkAndSetCursors(QMouseEvent *pe);
+    CaptureRect GetWidgetRect();
 
 public:
     static const int ColorIndexWhite = 11;
@@ -117,6 +121,9 @@ private:
 
     Ui::MoveMeWidget *ui;
 
+    ICaptureSource *m_captureSource;
+    QRgb m_color;
+
 protected:
     virtual void mousePressEvent(QMouseEvent *pe);
     virtual void mouseMoveEvent(QMouseEvent *pe);
@@ -125,28 +132,10 @@ protected:
     virtual void resizeEvent(QResizeEvent *);
     virtual void paintEvent(QPaintEvent *);
 
-
-
-
-
 // ICaptureListenerCallback
 public:
     virtual bool isListenerCallbackEnabled();
     virtual void listenerBufferCallback(const CaptureBuffer &buffer);
-
-private slots:
-    void UpdateListener();
-private:
-    ICaptureSource *m_captureSource;
-    QRgb m_color;
-
-    CaptureRect GetWidgetRect();
-
-    // todo move to math helper
-    QRgb getColor(const CaptureBuffer &buffer);
-public:
-    void SetCaptureSource(ICaptureSource *captureSource);
-    QRgb getColor();
 };
 
 #endif // MOVEMEWIDGET_H

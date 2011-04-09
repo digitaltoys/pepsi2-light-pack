@@ -86,35 +86,9 @@ namespace capture
                 : 0;
         }
 
-    //    const QPoint & center(){
+    //    const QPoint & getQPointCenter(){
     //        return QPoint( left + width / 2, top + height / 2 );
     //    }
-
     };
-
-    //struct CaptureScreenInfo
-    //{
-    //    // Flag for capture screen only once for all grab widgets in current screen
-    //    bool alreadyCaptured;
-
-    //    // Part of the screen which contains all grab widgets in current screen
-    //    CaptureRect rect;
-
-    //    // Buffer for storing grabbed colors for 'rect' of screen
-    //    CaptureBuffer buffer;
-
-    //    //CaptureScreenInfo() : rect(), buffer(), alreadyCaptured(false) { }
-
-    ////    int id() {
-    ////        return rect.screenId;
-    ////    }
-
-    ////    void setId( int id ) {
-    ////        rect.screenId = id;
-    ////    }
-    //};
-
-
-
 }
 }

@@ -24,6 +24,7 @@
  *
  */
 
+#include "debug.h"
 #include "CaptureSourceBase.hpp"
 
 //#include <QApplication>
@@ -38,87 +39,6 @@ namespace capture
 {
     CaptureSourceBase::CaptureSourceBase()
     {
-    }
-
-    // ICaptureSource
-
-    void CaptureSourceBase::subscribeListener(ICaptureListenerCallback *callback, const CaptureRect &rect)
-    {
-        if (hasListener(callback))
-        {
-            //todoqWarning()
-              //  << "Listener already added for rect:"
-                //<< rect.left << rect.top << rect.width << rect.height;
-            return;
-        }
-
-        ListenerInfo info;
-        info.callback = callback;
-        info.rect = rect;
-
-        m_listeners.push_back(info);
-
-        recalculateRect();
-    }
-
-    bool CaptureSourceBase::hasListener(ICaptureListenerCallback *callback) const
-    {
-        for (ListenerInfoConstIterator it = m_listeners.begin(); it != m_listeners.end(); it++)
-        {
-            if (it->callback == callback)
-                return true;
-        }
-        return false;
-    }
-
-    void CaptureSourceBase::updateListener(ICaptureListenerCallback *callback, const CaptureRect &rect)
-    {
-        if (!hasListener(callback))
-        {
-            //todoqWarning()
-              //  << "Listener not exists for rect:"
-                //<< rect.left << rect.top << rect.width << rect.height;
-            return;
-        }
-
-        for (ListenerInfoIterator it = m_listeners.begin(); it != m_listeners.end(); it++)
-        {
-            if (it->callback == callback)
-            {
-                it->rect = rect;
-                break;
-            }
-        }
-
-        recalculateRect();
-    }
-
-    void CaptureSourceBase::unsubscribeListener(ICaptureListenerCallback *callback)
-    {
-        if (!hasListener(callback))
-        {
-            //todoqWarning()
-              //  << "Listener not exists for rect:"
-                //<< rect.left << rect.top << rect.width << rect.height;
-            return;
-        }
-
-        for (ListenerInfoIterator it = m_listeners.begin(); it != m_listeners.end(); it++)
-        {
-            if (it->callback == callback)
-            {
-                m_listeners.erase(it);
-                break;
-            }
-        }
-
-        recalculateRect();
-    }
-
-    void CaptureSourceBase::unsubscribeAllListeners()
-    {
-        m_listeners.clear();
-        recalculateRect();
     }
 
     void CaptureSourceBase::recalculateRect()
@@ -152,6 +72,34 @@ namespace capture
                 m_rect.setBottom(it->rect.getBottom());
         }
 
+    }
+
+    void CaptureSourceBase::copyToSubBufferData(
+        const int &bytesCount,
+        const CaptureRect &fromRect, const uint8_t *fromData,
+        const CaptureRect &toRect, uint8_t *toData)
+    {
+        int toRectLineWidth = toRect.width * bytesCount;
+
+        for (int y = 0; y < toRect.height; y++)
+        {
+            int dstOffset =
+                y
+                * toRectLineWidth;
+            int srcOffset =
+                bytesCount
+                * (
+                    (y + toRect.top - fromRect.top) * fromRect.width
+                    + (toRect.left - fromRect.left)
+                );
+
+            memcpy(
+                toData + dstOffset,
+                fromData + srcOffset,
+                toRectLineWidth);
+        }
+    }
+
     /*todo    // Initialize screens
         for(int i = 0; i < m_listeners.count(); i++){
             Listener * it = m_listeners[0];
@@ -165,9 +113,7 @@ namespace capture
             CaptureRect *captureRect = &m_listeners[i]->rect;
 
 ..... if .....
-        }*/
-    }
-/*todo
+        }*//*todo
     void CaptureSourceBase::initializeScreen(int screenId)
     {
         for(int i = 0; i < m_screens.count(); i++)
@@ -176,5 +122,84 @@ namespace capture
             }
         }
     }*/
+
+    // ICaptureSource
+
+    void CaptureSourceBase::subscribeListener(ICaptureListenerCallback *callback, const CaptureRect &rect)
+    {
+        if (hasListener(callback))
+        {
+            qWarning()
+                << "Listener already added for rect:"
+                << rect.left << rect.top << rect.width << rect.height;
+            return;
+        }
+
+        ListenerInfo info;
+        info.callback = callback;
+        info.rect = rect;
+
+        m_listeners.push_back(info);
+
+        recalculateRect();
+    }
+
+    bool CaptureSourceBase::hasListener(ICaptureListenerCallback *callback) const
+    {
+        for (ListenerInfoConstIterator it = m_listeners.begin(); it != m_listeners.end(); it++)
+        {
+            if (it->callback == callback)
+                return true;
+        }
+        return false;
+    }
+
+    void CaptureSourceBase::updateListener(ICaptureListenerCallback *callback, const CaptureRect &rect)
+    {
+        if (!hasListener(callback))
+        {
+            qWarning()
+                << "Listener have no for rect:"
+                << rect.left << rect.top << rect.width << rect.height;
+            return;
+        }
+
+        for (ListenerInfoIterator it = m_listeners.begin(); it != m_listeners.end(); it++)
+        {
+            if (it->callback == callback)
+            {
+                it->rect = rect;
+                break;
+            }
+        }
+
+        recalculateRect();
+    }
+
+    void CaptureSourceBase::unsubscribeListener(ICaptureListenerCallback *callback)
+    {
+        if (!hasListener(callback))
+        {
+            qWarning() << "Listener have no";
+            return;
+        }
+
+        for (ListenerInfoIterator it = m_listeners.begin(); it != m_listeners.end(); it++)
+        {
+            if (it->callback == callback)
+            {
+                m_listeners.erase(it);
+                break;
+            }
+        }
+
+        recalculateRect();
+    }
+
+    void CaptureSourceBase::unsubscribeAllListeners()
+    {
+        m_listeners.clear();
+        recalculateRect();
+    }
 }
 }

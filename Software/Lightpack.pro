@@ -110,7 +110,8 @@ SOURCES += src/main.cpp \
     capture/CaptureSourceBase.cpp \
     capture/CaptureSourceQtGrabWindow.cpp \
     capture/CaptureSourceWindowsDirect3D9.cpp \
-    capture/CaptureSourceWindowsWinApi.cpp
+    capture/CaptureSourceWindowsWinApi.cpp \
+    capture/capturemath.cpp
 HEADERS += hidapi/hidapi.h \
     ../CommonHeaders/commands.h \
     ../CommonHeaders/RGB.h \
@@ -133,7 +134,8 @@ HEADERS += hidapi/hidapi.h \
     capture/ICaptureListenerCallback.hpp \
     capture/CaptureSourceQtGrabWindow.hpp \
     capture/CaptureSourceWindowsDirect3D9.hpp \
-    capture/CaptureSourceWindowsWinApi.hpp
+    capture/CaptureSourceWindowsWinApi.hpp \
+    capture/capturemath.hpp
 FORMS += src/mainwindow.ui \
     src/aboutdialog.ui \
     src/movemewidget.ui
