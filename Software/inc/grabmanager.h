@@ -49,7 +49,7 @@ public:
     ~GrabManager();
 
 signals:
-    void updateLedsColors(const QList<StructRGB> & colorsNew);
+    void updateLedsColors(const QList<StructRGB> & colors);
     void ambilightTimeOfUpdatingColors(double ms);
 
 
@@ -79,51 +79,37 @@ private slots:
     void updateFpsOnMainWindow();
 
 private:
-    void updateSmoothSteps(); /* works with colorsNew */
-
-private:
     void initColorLists();
     void clearColorsNew();
     void clearColorsCurrent();
     void initLedWidgets();
 
 
-private: // variables
-    QTimer *timerGrab;
-    QTimer *timerUpdateFPS;
-    QList<MoveMeWidget *> ledWidgets;
-    const static QColor backgroundAndTextColors[LEDS_COUNT][2];
-    TimeEvaluations *timeEval;
-
-    QList<StructRGB> colorsCurrent;
-    QList<StructRGB> colorsNew;
-
-    QRect screenSaved;
-    int screenSavedIndex;
-
-    bool isAmbilightOn;    
-    bool isResizeOrMoving;
-    bool updateColorsOnlyIfChanges;
-    bool avgColorsOnAllLeds;
-    int minLevelOfSensivity;
-
-    // Store last grabbing time in milliseconds
-    double fpsMs;
-
-    // Settings:
-    int ambilightDelayMs;
-    int colorDepth;
-
-
-
-
-
+private:
     ICaptureSource *m_captureSource;
 
+    QList<StructRGB> m_colorsCurrent;
+    QList<StructRGB> m_colorsNew;
 
+    QTimer *m_timerGrab;
 
+    QList<MoveMeWidget *> m_ledWidgets;
 
+    QRect m_screenSaved;
+    int m_screenIndexSaved;
 
+    bool m_isAmbilightOn;
+    bool m_isResizeOrMoving;
+
+    bool m_alwaysUpdateColors;
+    bool m_avgColorsOnAllLeds;
+    int m_minLevelOfSensivity;
+    int m_ambilightDelayMs;
+    int m_colorDepth;
+
+    TimeEvaluations *m_timeEval;
+    QTimer *m_timerUpdateFPS;
+    double m_fpsMs;
 };
 
 #endif // GRAB_MANAGER_H
