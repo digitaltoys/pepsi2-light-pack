@@ -54,12 +54,9 @@ public:
     void setColors(int index);
     void setBackgroundColor(QColor color);
     void setTextColor(QColor color);
-    double getCoefRed();
-    double getCoefGreen();
-    double getCoefBlue();
     bool isGrabEnabled();
 
-    void SetCaptureSource(ICaptureSource *captureSource);
+    void setCaptureSource(ICaptureSource *captureSource);
     QRgb getColor();
 
 signals:
@@ -80,7 +77,7 @@ private:
     double loadCoefWithCheck(QString coefStr);
     void setCursorOnAll(Qt::CursorShape cursor);
     void checkAndSetCursors(QMouseEvent *pe);
-    CaptureRect GetWidgetRect();
+    CaptureRect getWidgetRect();
 
 public:
     static const int ColorIndexWhite = 11;
@@ -97,29 +94,33 @@ private:
         RESIZE_RIGHT_UP,
         RESIZE_LEFT_DOWN,
         RESIZE_LEFT_UP,
-    } cmd;
+    } m_cmd;
 
-    QPoint mousePressPosition;
-    QPoint mousePressGlobalPosition;
-    QSize mousePressDiffFromBorder;
+    QPoint m_mousePressPosition;
+    QPoint m_mousePressGlobalPosition;
+    QSize m_mousePressDiffFromBorder;
 
-    static const int MinimumWidth = 50;
-    static const int MinimumHeight = 50;
+    static const int MinWidth = 50;
+    static const int MinHeight = 50;
     static const int BorderWidth = 10;
     static const int StickyCloserPixels = 10; // Sticky to screen when closer N pixels
 
+    static const double MinCoefValue = 0.1;
+    static const double MaxCoefValue = 3.0;
+
     static const int ColorsCount = 12;
 
-    static const QColor colors[ColorsCount][2]; // background and text colors
-    int colorIndex; // index of color which using now
+    static const QColor m_widgetColors[ColorsCount][2];
+    int m_widgetColorIndex;
 
-    int selfId; // ID of this object
+     // Widget unique ID (sets in constructor)
+    int m_selfId;
 
-    double coefRed;
-    double coefGreen;
-    double coefBlue;
+    double m_coefRed;
+    double m_coefGreen;
+    double m_coefBlue;
 
-    Ui::MoveMeWidget *ui;
+    Ui::MoveMeWidget *m_ui;
 
     ICaptureSource *m_captureSource;
     QRgb m_color;
