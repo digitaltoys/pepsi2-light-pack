@@ -1,5 +1,5 @@
 /*
- * movemewidget.cpp
+ * GrabWidget.cpp
  *
  *  Created on: 29.01.2011
  *      Author: Mike Shatohin (brunql)
@@ -26,8 +26,8 @@
 
 
 #include <QtGui>
-#include "movemewidget.h"
-#include "ui_movemewidget.h"
+#include "GrabWidget.h"
+#include "ui_GrabWidget.h"
 #include "settings.h"
 
 #include "debug.h"
@@ -37,7 +37,7 @@ using lightpack::capture::math::getAvgColor;
 using lightpack::capture::math::setAlphaChannel;
 
 // Colors changes when middle button clicked
-const QColor MoveMeWidget::m_widgetColors[MoveMeWidget::ColorsCount][2] = {
+const QColor GrabWidget::m_widgetColors[GrabWidget::ColorsCount][2] = {
     { Qt::red,        Qt::black }, /* LED1 */
     { Qt::green,      Qt::black }, /* LED2 */
     { Qt::blue,       Qt::white }, /* LED3 */
@@ -52,9 +52,9 @@ const QColor MoveMeWidget::m_widgetColors[MoveMeWidget::ColorsCount][2] = {
     { Qt::white,      Qt::black }, /* ColorIndexWhite == 11 */
 };
 
-MoveMeWidget::MoveMeWidget(int id, QWidget *parent) :
+GrabWidget::GrabWidget(int id, QWidget *parent) :
     QWidget(parent),
-    m_ui(new Ui::MoveMeWidget)
+    m_ui(new Ui::GrabWidget)
 {
     DEBUG_LOW_LEVEL << Q_FUNC_INFO << id;
 
@@ -78,14 +78,14 @@ MoveMeWidget::MoveMeWidget(int id, QWidget *parent) :
     connect(m_ui->checkBox_SelfId, SIGNAL(toggled(bool)), this, SLOT(checkBoxSelfId_Toggled(bool)));
 }
 
-MoveMeWidget::~MoveMeWidget()
+GrabWidget::~GrabWidget()
 {
     DEBUG_LOW_LEVEL << Q_FUNC_INFO;
 
     delete m_ui;
 }
 
-void MoveMeWidget::closeEvent(QCloseEvent *event)
+void GrabWidget::closeEvent(QCloseEvent *event)
 {
     qWarning() << Q_FUNC_INFO << "event->type():" << event->type() << "Id:" << m_selfId;
 
@@ -93,7 +93,7 @@ void MoveMeWidget::closeEvent(QCloseEvent *event)
 }
 
 
-void MoveMeWidget::saveSizeAndPosition()
+void GrabWidget::saveSizeAndPosition()
 {
     DEBUG_LOW_LEVEL << Q_FUNC_INFO;
 
@@ -101,7 +101,7 @@ void MoveMeWidget::saveSizeAndPosition()
     Settings::setValue("LED_" + QString::number(m_selfId+1) + "/Size", size() );
 }
 
-void MoveMeWidget::settingsProfileChanged()
+void GrabWidget::settingsProfileChanged()
 {
     DEBUG_LOW_LEVEL << Q_FUNC_INFO << m_selfId;
 
@@ -119,7 +119,7 @@ void MoveMeWidget::settingsProfileChanged()
 }
 
 
-void MoveMeWidget::setColors(int index)
+void GrabWidget::setColors(int index)
 {
     DEBUG_MID_LEVEL << Q_FUNC_INFO << index;
 
@@ -136,7 +136,7 @@ void MoveMeWidget::setColors(int index)
     }
 }
 
-void MoveMeWidget::setBackgroundColor(QColor color)
+void GrabWidget::setBackgroundColor(QColor color)
 {
     DEBUG_MID_LEVEL << Q_FUNC_INFO << hex << color.rgb();
 
@@ -145,7 +145,7 @@ void MoveMeWidget::setBackgroundColor(QColor color)
     this->setPalette(pal);
 }
 
-void MoveMeWidget::setTextColor(QColor color)
+void GrabWidget::setTextColor(QColor color)
 {
     DEBUG_MID_LEVEL << Q_FUNC_INFO << hex << color.rgb();
 
@@ -156,7 +156,7 @@ void MoveMeWidget::setTextColor(QColor color)
 }
 
 // private
-void MoveMeWidget::setCursorOnAll(Qt::CursorShape cursor)
+void GrabWidget::setCursorOnAll(Qt::CursorShape cursor)
 {
     DEBUG_MID_LEVEL << Q_FUNC_INFO << cursor;
 
@@ -166,7 +166,7 @@ void MoveMeWidget::setCursorOnAll(Qt::CursorShape cursor)
 }
 
 // private
-double MoveMeWidget::loadCoefWithCheck(QString coefStr)
+double GrabWidget::loadCoefWithCheck(QString coefStr)
 {
     DEBUG_MID_LEVEL << Q_FUNC_INFO << coefStr;
 
@@ -189,7 +189,7 @@ double MoveMeWidget::loadCoefWithCheck(QString coefStr)
 }
 
 
-void MoveMeWidget::mousePressEvent(QMouseEvent *pe)
+void GrabWidget::mousePressEvent(QMouseEvent *pe)
 {
     DEBUG_MID_LEVEL << Q_FUNC_INFO << pe->pos();
 
@@ -268,7 +268,7 @@ void MoveMeWidget::mousePressEvent(QMouseEvent *pe)
     }
 }
 
-void MoveMeWidget::mouseMoveEvent(QMouseEvent *pe)
+void GrabWidget::mouseMoveEvent(QMouseEvent *pe)
 {
     DEBUG_HIGH_LEVEL << Q_FUNC_INFO << "pe->pos() =" << pe->pos();
 
@@ -428,7 +428,7 @@ void MoveMeWidget::mouseMoveEvent(QMouseEvent *pe)
     resizeEvent(NULL);
 }
 
-void MoveMeWidget::mouseReleaseEvent(QMouseEvent *pe)
+void GrabWidget::mouseReleaseEvent(QMouseEvent *pe)
 {
     DEBUG_MID_LEVEL << Q_FUNC_INFO;
 
@@ -446,7 +446,7 @@ void MoveMeWidget::mouseReleaseEvent(QMouseEvent *pe)
 }
 
 
-void MoveMeWidget::wheelEvent(QWheelEvent *pe)
+void GrabWidget::wheelEvent(QWheelEvent *pe)
 {
     DEBUG_MID_LEVEL << Q_FUNC_INFO;
 
@@ -474,7 +474,7 @@ void MoveMeWidget::wheelEvent(QWheelEvent *pe)
     setColors(m_widgetColorIndex);
 }
 
-void MoveMeWidget::resizeEvent(QResizeEvent *)
+void GrabWidget::resizeEvent(QResizeEvent *)
 {
     DEBUG_MID_LEVEL << Q_FUNC_INFO;
 
@@ -483,7 +483,7 @@ void MoveMeWidget::resizeEvent(QResizeEvent *)
             QString::number(this->height()) );
 }
 
-void MoveMeWidget::paintEvent(QPaintEvent *)
+void GrabWidget::paintEvent(QPaintEvent *)
 {
     DEBUG_MID_LEVEL << Q_FUNC_INFO;
 
@@ -494,14 +494,14 @@ void MoveMeWidget::paintEvent(QPaintEvent *)
     painter.drawRect(0, 0, width() - 1, height() - 1);
 }
 
-bool MoveMeWidget::isGrabEnabled()
+bool GrabWidget::isGrabEnabled()
 {
     DEBUG_HIGH_LEVEL << Q_FUNC_INFO;
 
     return m_ui->checkBox_SelfId->isChecked();
 }
 
-void MoveMeWidget::setCaptureSource(ICaptureSource *captureSource)
+void GrabWidget::setCaptureSource(ICaptureSource *captureSource)
 {
     if (m_captureSource != 0)
     {
@@ -518,7 +518,7 @@ void MoveMeWidget::setCaptureSource(ICaptureSource *captureSource)
     }
 }
 
-QRgb MoveMeWidget::getColor()
+QRgb GrabWidget::getColor()
 {
     // Alpha channel is used to determine grab is enabled (0xff) or disabled (0x00)
     if (isGrabEnabled())
@@ -529,7 +529,7 @@ QRgb MoveMeWidget::getColor()
     return m_color;
 }
 
-void MoveMeWidget::checkAndSetCursors(QMouseEvent *pe)
+void GrabWidget::checkAndSetCursors(QMouseEvent *pe)
 {
     DEBUG_MID_LEVEL << Q_FUNC_INFO;
 
@@ -574,7 +574,7 @@ void MoveMeWidget::checkAndSetCursors(QMouseEvent *pe)
     }
 }
 
-CaptureRect MoveMeWidget::getWidgetRect()
+CaptureRect GrabWidget::getWidgetRect()
 {
     CaptureRect result;
     result.left = x();
@@ -585,7 +585,7 @@ CaptureRect MoveMeWidget::getWidgetRect()
     return result;
 }
 
-void MoveMeWidget::checkBoxSelfId_Toggled(bool state)
+void GrabWidget::checkBoxSelfId_Toggled(bool state)
 {
     DEBUG_LOW_LEVEL << Q_FUNC_INFO << state;
 
@@ -594,19 +594,19 @@ void MoveMeWidget::checkBoxSelfId_Toggled(bool state)
     Settings::setValue("LED_" + QString::number(m_selfId+1) + "/IsEnabled", state);
 }
 
-void MoveMeWidget::updateCaptureListener()
+void GrabWidget::updateCaptureListener()
 {
     m_captureSource->updateListener(this, getWidgetRect());
 }
 
 // ICaptureSourceCallback
 
-bool MoveMeWidget::isListenerCallbackEnabled()
+bool GrabWidget::isListenerCallbackEnabled()
 {
     return isGrabEnabled();
 }
 
-void MoveMeWidget::listenerBufferCallback(const CaptureBuffer &buffer)
+void GrabWidget::listenerBufferCallback(const CaptureBuffer &buffer)
 {
     m_color = getAvgColor(buffer);
 
