@@ -1,7 +1,7 @@
 /*
- * version.h
+ * AboutDialog.h
  *
- *  Created on: 27.07.2010
+ *  Created on: 26.07.2010
  *      Author: Mike Shatohin (brunql)
  *     Project: Lightpack
  *
@@ -24,26 +24,32 @@
  *
  */
 
+#pragma once
 
-#ifndef VERSION_H
-#define VERSION_H
+#include <QDialog>
+#include <QCloseEvent>
 
-// Current version of Lightpack software
-#define VERSION_STR     "4.1.0"
+namespace Ui {
+    class AboutDialog;
+}
 
-// Resource defines using in Lightpack.rc
-#define VER_FILEVERSION             4,1,0,2
-#define VER_PRODUCTVERSION          VER_FILEVERSION
+class AboutDialog : public QDialog {
+    Q_OBJECT
+public:
+    AboutDialog(QWidget *parent = 0);
+    ~AboutDialog();
 
-#define VER_FILEVERSION_STR         VERSION_STR "\0"
-#define VER_PRODUCTVERSION_STR      VER_FILEVERSION_STR
+    void setFirmwareVersion(const QString &firmwareVersion);
 
-#define VER_PRODUCTNAME_STR         "Lightpack"
-#define VER_COMPANYNAME_STR         "Lightpack"
-#define VER_FILEDESCRIPTION_STR     "lightpack.googlecode.com"
-#define VER_INTERNALNAME_STR        "Lightpack"
-#define VER_LEGALCOPYRIGHT_STR      "Copyleft © 2011 Lightpack"
-#define VER_ORIGINALFILENAME_STR    "Lightpack_sw" VERSION_STR ".exe"
+private:
+    void versionsUpdate();
 
+protected:
+    virtual void changeEvent(QEvent *e);
+    virtual void closeEvent(QCloseEvent *event);
 
-#endif // VERSION_H
+private:
+    Ui::AboutDialog *ui;
+
+    QString fimwareVersion;
+};

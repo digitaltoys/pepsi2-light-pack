@@ -1,5 +1,5 @@
 /*
- * ambilightusb.cpp
+ * AmbilightUsb.cpp
  *
  *  Created on: 26.07.2010
  *      Author: Mike Shatohin (brunql)
@@ -25,11 +25,10 @@
  */
 
 
-#include "ambilightusb.h"
+#include "AmbilightUsb.h"
 
 #include <unistd.h>
 
-#include <QtDebug>
 #include "debug.h"
 
 AmbilightUsb::AmbilightUsb(QObject *parent) :

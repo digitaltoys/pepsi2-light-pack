@@ -25,12 +25,13 @@
  */
 
 #include "GrabManager.h"
-#include "debug.h"
 
 #include "CaptureSourceWindowsWinApi.hpp"
 #include "CaptureSourceQtGrabWindow.hpp"
 
 #include "capturemath.hpp"
+
+#include "debug.h"
 
 using namespace lightpack::capture::math;
 
@@ -75,12 +76,12 @@ GrabManager::~GrabManager()
     delete m_timerGrab;
     delete m_timeEval;
 
-    for (int i = 0; i < m_ledWidgets.count(); i++)
+    for (int i = 0; i < m_grabWidgets.count(); i++)
     {
-        m_ledWidgets[i]->close();
+        m_grabWidgets[i]->close();
     }
 
-    m_ledWidgets.clear();
+    m_grabWidgets.clear();
 
     if (m_captureSource != 0)
         delete m_captureSource;
@@ -123,25 +124,25 @@ void GrabManager::initLedWidgets()
 {
     DEBUG_LOW_LEVEL << Q_FUNC_INFO;
 
-    m_ledWidgets.clear();
+    m_grabWidgets.clear();
 
     for (int i = 0; i < LEDS_COUNT; i++)
     {
-        m_ledWidgets << new GrabWidget(i, this);
+        m_grabWidgets << new GrabWidget(i, this);
     }
 
     for (int i = 0; i < LEDS_COUNT; i++)
     {
-        connect(m_ledWidgets[i], SIGNAL(resizeOrMoveCompleted(int)), this, SLOT(setResizeOrMovingFalse()));
-        connect(m_ledWidgets[i], SIGNAL(resizeOrMoveStarted()), this, SLOT(setResizeOrMovingTrue()));
+        connect(m_grabWidgets[i], SIGNAL(resizeOrMoveCompleted(int)), this, SLOT(setResizeOrMovingFalse()));
+        connect(m_grabWidgets[i], SIGNAL(resizeOrMoveStarted()), this, SLOT(setResizeOrMovingTrue()));
         // todo const_cast
-        m_ledWidgets[i]->setCaptureSource(const_cast<ICaptureSource *>(m_captureSource));
+        m_grabWidgets[i]->setCaptureSource(const_cast<ICaptureSource *>(m_captureSource));
     }
 
     firstWidgetPositionChanged();
 
     // First LED widget using to determine grabbing-monitor in WinAPI version of Grab
-    connect(m_ledWidgets[0], SIGNAL(resizeOrMoveCompleted(int)), this, SLOT(firstWidgetPositionChanged()));
+    connect(m_grabWidgets[0], SIGNAL(resizeOrMoveCompleted(int)), this, SLOT(firstWidgetPositionChanged()));
 }
 
 void GrabManager::firstWidgetPositionChanged()
@@ -160,7 +161,7 @@ void GrabManager::scaleLedWidgets(int screenIndexResized)
 {
     DEBUG_LOW_LEVEL << Q_FUNC_INFO << "screenIndexResized:" << screenIndexResized;
 
-    int screenIndexOfFirstLedWidget = QApplication::desktop()->screenNumber(m_ledWidgets[0]);
+    int screenIndexOfFirstLedWidget = QApplication::desktop()->screenNumber(m_grabWidgets[0]);
 
     DEBUG_LOW_LEVEL << Q_FUNC_INFO << "LedWidgets[0] index of screen:" << screenIndexOfFirstLedWidget;
 
@@ -190,13 +191,13 @@ void GrabManager::scaleLedWidgets(int screenIndexResized)
     m_screenSaved = screen;
     m_screenIndexSaved = screenIndexOfFirstLedWidget;
 
-    for (int i = 0; i < m_ledWidgets.count(); i++)
+    for (int i = 0; i < m_grabWidgets.count(); i++)
     {
-        int width  = round( scaleX * m_ledWidgets[i]->width() );
-        int height = round( scaleY * m_ledWidgets[i]->height() );
+        int width  = round( scaleX * m_grabWidgets[i]->width() );
+        int height = round( scaleY * m_grabWidgets[i]->height() );
 
-        int x = m_ledWidgets[i]->x();
-        int y = m_ledWidgets[i]->y();
+        int x = m_grabWidgets[i]->x();
+        int y = m_grabWidgets[i]->y();
 
         x -= screen.x();
         y -= screen.y();
@@ -210,10 +211,10 @@ void GrabManager::scaleLedWidgets(int screenIndexResized)
         x -= deltaX;
         y -= deltaY;
 
-        m_ledWidgets[i]->move(x,y);
-        m_ledWidgets[i]->resize(width, height);
+        m_grabWidgets[i]->move(x,y);
+        m_grabWidgets[i]->resize(width, height);
 
-        m_ledWidgets[i]->saveSizeAndPosition();
+        m_grabWidgets[i]->saveSizeAndPosition();
 
         DEBUG_LOW_LEVEL << Q_FUNC_INFO << "new values [" << i << "]" << "x =" << x << "y =" << y << "w =" << width << "h =" << height;
     }
@@ -244,7 +245,7 @@ void GrabManager::updateLedsColorsIfChanged()
 
         for (int i = 0; i < LEDS_COUNT; i++)
         {
-            m_colorsNew[i].rgb = m_ledWidgets[i]->getColor();
+            m_colorsNew[i].rgb = m_grabWidgets[i]->getColor();
         }
 
         if (m_avgColorsOnAllLeds)
@@ -328,8 +329,8 @@ void GrabManager::settingsProfileChanged()
     this->m_ambilightDelayMs = Settings::value("GrabSlowdownMs").toInt();
     this->m_colorDepth = Settings::value("Firmware/ColorDepth").toInt();
 
-    for (int i = 0; i < m_ledWidgets.count(); i++)
-        m_ledWidgets[i]->settingsProfileChanged();
+    for (int i = 0; i < m_grabWidgets.count(); i++)
+        m_grabWidgets[i]->settingsProfileChanged();
 }
 
 
@@ -360,12 +361,12 @@ void GrabManager::setVisibleLedWidgets(bool state)
 {
     DEBUG_LOW_LEVEL << Q_FUNC_INFO << state;
 
-    for (int i = 0; i < m_ledWidgets.count(); i++)
+    for (int i = 0; i < m_grabWidgets.count(); i++)
     {
         if (state)
-            m_ledWidgets[i]->show();
+            m_grabWidgets[i]->show();
         else
-            m_ledWidgets[i]->hide();
+            m_grabWidgets[i]->hide();
     }
 }
 
@@ -375,10 +376,10 @@ void GrabManager::setColoredLedWidgets(bool state)
 
     if (state)
     {
-        for (int i = 0; i < m_ledWidgets.count(); i++)
+        for (int i = 0; i < m_grabWidgets.count(); i++)
         {
             // Fill label with labelColors[i] color
-            m_ledWidgets[i]->setColors(i);
+            m_grabWidgets[i]->setColors(i);
         }
     }
 }
@@ -389,10 +390,10 @@ void GrabManager::setWhiteLedWidgets(bool state)
 
     if (state)
     {
-        for (int i = 0; i < m_ledWidgets.count(); i++)
+        for (int i = 0; i < m_grabWidgets.count(); i++)
         {
             // Fill labels white
-            m_ledWidgets[i]->setColors(GrabWidget::ColorIndexWhite);
+            m_grabWidgets[i]->setColors(GrabWidget::ColorIndexWhite);
         }
     }
 }

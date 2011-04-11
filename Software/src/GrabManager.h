@@ -24,18 +24,17 @@
  *
  */
 
-
-#ifndef GRAB_MANAGER_H
-#define GRAB_MANAGER_H
+#pragma once
 
 #include <QtGui>
-#include "../../CommonHeaders/RGB.h"        /* Led defines */
-#include "settings.h"
-#include "timeevaluations.h"
-#include "struct_rgb.h"
-#include "movemewidget.h"
 
-#include "../capture/ICaptureSource.hpp"
+#include "../../CommonHeaders/RGB.h"        /* Led defines */
+#include "Settings.h"
+#include "TimeEvaluations.h"
+#include "StructRGB.h"
+#include "GrabWidget.h"
+
+#include "ICaptureSource.hpp"
 
 using lightpack::capture::ICaptureSource;
 
@@ -93,7 +92,7 @@ private:
 
     QTimer *m_timerGrab;
 
-    QList<MoveMeWidget *> m_ledWidgets;
+    QList<GrabWidget *> m_grabWidgets;
 
     QRect m_screenSaved;
     int m_screenIndexSaved;
@@ -111,5 +110,3 @@ private:
     QTimer *m_timerUpdateFPS;
     double m_fpsMs;
 };
-
-#endif // GRAB_MANAGER_H

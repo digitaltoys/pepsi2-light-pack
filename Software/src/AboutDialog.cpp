@@ -1,5 +1,5 @@
 /* 
- * aboutdialog.cpp
+ * AboutDialog.cpp
  *
  *  Created on: 26.07.2010
  *      Author: Mike Shatohin (brunql)
@@ -24,16 +24,16 @@
  *
  */
  
-#include "aboutdialog.h"
-#include "ui_aboutdialog.h"
+#include "AboutDialog.h"
+#include "ui_AboutDialog.h"
+
 #include "version.h"
 
-#include <QtDebug>
 #include "debug.h"
 
 AboutDialog::AboutDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::aboutDialog)
+    ui(new Ui::AboutDialog)
 {
     DEBUG_LOW_LEVEL << Q_FUNC_INFO;
 

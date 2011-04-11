@@ -24,9 +24,8 @@
  *
  */
 
-#include "settings.h"
+#include "Settings.h"
 
-#include <QtDebug>
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QSize>

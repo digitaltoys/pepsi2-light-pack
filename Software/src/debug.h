@@ -1,7 +1,7 @@
 /*
- * speedtest.h
+ * debug.h
  *
- *  Created on: 4.04.2011
+ *  Created on: 22.03.2011
  *      Author: Mike Shatohin (brunql)
  *     Project: Lightpack
  *
@@ -24,40 +24,35 @@
  *
  */
 
-#ifndef SPEEDTEST_H
-#define SPEEDTEST_H
+#pragma once
 
-#include <QObject>
-#include <QFile>
-#include <QTextStream>
-#include <QTime>
+#include <QtDebug>
 
-class SpeedTest : public QObject
+// Set and store in main.cpp file
+extern unsigned debugLevel;
+
+
+// Using:
+//
+//  DEBUG_HIGH_LEVEL << "This will be logged only if debugLevel >= 3";
+//  DEBUG_OUT << "This will be logged always";
+//
+
+namespace Debug
 {
-    Q_OBJECT
-
-public:
-    SpeedTest();
-
-    void start();
-
-private:
-    void printHeader();
-    void startTests();
-    void testFullScreenGrabSpeed();
-    void testDefaultLedWidgetsGrabSpeed();
-
-private:
-    QFile resultFile;
-    QTextStream resultStream;
-
-    QTime time;
-
-    static const int TestTimes;
-    static const int LedsCount;
-    static const int LedWidth;
-    static const int LedHeight;
-};
+    enum DebugLevels
+    {
+        HighLevel = 3,
+        MidLevel = 2,
+        LowLevel = 1,
+        ZeroLevel = 0
+    };
+}
 
 
-#endif // SPEEDTEST_H
+#define DEBUG_HIGH_LEVEL    DEBUG_OUT_FUNC_INFO( 3 )
+#define DEBUG_MID_LEVEL     DEBUG_OUT_FUNC_INFO( 2 )
+#define DEBUG_LOW_LEVEL     DEBUG_OUT_FUNC_INFO( 1 )
+#define DEBUG_OUT           qDebug()
+
+#define DEBUG_OUT_FUNC_INFO( DEBUG_LEVEL )   if(debugLevel >= DEBUG_LEVEL) qDebug()
