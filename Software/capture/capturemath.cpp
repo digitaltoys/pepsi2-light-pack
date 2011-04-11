@@ -68,9 +68,9 @@ namespace math
             }
         }
 
-        r = (unsigned)round((double) r / pixels) & 0xff;
-        g = (unsigned)round((double) g / pixels) & 0xff;
-        b = (unsigned)round((double) b / pixels) & 0xff;
+        r = round((double) r / pixels);
+        g = round((double) g / pixels);
+        b = round((double) b / pixels);
 
         QRgb result = qRgb(r, g, b);
 
