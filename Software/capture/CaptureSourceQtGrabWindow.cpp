@@ -1,5 +1,5 @@
 /*
- * CaptureSourceQtGrabWindow.cpp
+ * CaptureSourceWindowsWinApi.cpp
  *
  *  Created on: 7.04.2011
  *     Authors: Mike Shatohin && Michail Karpelyansky
@@ -24,55 +24,56 @@
  *
  */
 
-//#include <QApplication>
-//#include <QDesktopWidget>
-//#include <QPixmap>
-//#include <QImage>
+#include <QApplication>
+#include <QDesktopWidget>
 
-//#include "grab_api.h"
+#include "CaptureSourceQtGrabWindow.hpp"
 
-//#include "debug.h"
+namespace lightpack
+{
+namespace capture
+{
+    CaptureSourceQtGrabWindow::CaptureSourceQtGrabWindow()
+    {
+        buffer.width = 1;
+        buffer.height = 1;
+        buffer.bitsCount = 32;
+        buffer.dataLength = buffer.width * buffer.height * 4;
+        buffer.data = (uint8_t *)malloc(buffer.dataLength);
+    }
 
-//#ifndef Q_WS_WIN
-//namespace GrabWinAPI
-//{
-//    void findScreenOnNextCapture( WId ) { }
-//    void captureScreen() { }
-//    QRgb getColor(const QWidget * ) { return 0; }
-//    QRgb getColor(int, int, int, int) { return 0; }
+    CaptureSourceQtGrabWindow::~CaptureSourceQtGrabWindow()
+    {
+        free(buffer.data);
+    }
 
-//    void setGrabPrecision(int) { }
-//    int getGrabPrecision() { return 0; }
-//};
-//#endif
+    void CaptureSourceQtGrabWindow::capture()
+    {
+        if (m_listeners.empty())
+            return;
 
-//namespace GrabQt
-//{
+        for (ListenerInfoIterator it = m_listeners.begin(); it != m_listeners.end(); it++)
+        {
+            if (it->callback->isListenerCallbackEnabled())
+            {
+                QPixmap pix = QPixmap::grabWindow(QApplication::desktop()->winId(),
+                                                  it->rect.left,
+                                                  it->rect.top,
+                                                  it->rect.width,
+                                                  it->rect.height);
 
-//QRgb getColor(const QWidget * grabme)
-//{
-//    DEBUG_HIGH_LEVEL << Q_FUNC_INFO;
+                QPixmap scaledPix = pix.scaled(1,1, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+                QImage im = scaledPix.toImage();
+                QRgb result = im.pixel(0,0);
 
-//    return getColor(grabme->x(),
-//                    grabme->y(),
-//                    grabme->width(),
-//                    grabme->height());
-//}
+                buffer.data[0] = qBlue(result);
+                buffer.data[1] = qGreen(result);
+                buffer.data[2] = qRed(result);
 
-//QRgb getColor(int x, int y, int width, int height)
-//{
-//    DEBUG_HIGH_LEVEL << Q_FUNC_INFO
-//            << "x y w h:" << x << y << width << height;
-
-//    QPixmap pix = QPixmap::grabWindow(QApplication::desktop()->winId(), x, y, width, height);
-//    QPixmap scaledPix = pix.scaled(1,1, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-//    QImage im = scaledPix.toImage();
-//    QRgb result = im.pixel(0,0);
-
-//    DEBUG_HIGH_LEVEL << "QRgb result =" << hex << result;
-
-//    return result;
-//}
-
-//};
+                it->callback->listenerBufferCallback(buffer);
+            }
+        }
+    }
+}
+}
 

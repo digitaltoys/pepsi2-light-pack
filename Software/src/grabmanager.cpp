@@ -27,7 +27,9 @@
 #include "grabmanager.h"
 #include "debug.h"
 
-#include "CaptureSourceWIndowsWinApi.hpp"
+#include "CaptureSourceWindowsWinApi.hpp"
+#include "CaptureSourceQtGrabWindow.hpp"
+
 #include "capturemath.hpp"
 
 using namespace lightpack::capture::math;
@@ -38,6 +40,7 @@ GrabManager::GrabManager(QWidget *parent) : QWidget(parent)
 
     // todo select capture type
     m_captureSource = (ICaptureSource*)(new lightpack::capture::CaptureSourceWindowsWinApi());
+    //m_captureSource = (ICaptureSource*)(new lightpack::capture::CaptureSourceQtGrabWindow());
 
     m_timerGrab = new QTimer(this);
     m_timeEval = new TimeEvaluations();
