@@ -1,5 +1,5 @@
 /*
- * ambilightusb.h
+ * AmbilightUsb.h
  *
  *  Created on: 26.07.2010
  *      Author: Mike Shatohin (brunql)
@@ -25,13 +25,12 @@
  */
 
 
-#ifndef AMBILIGHTUSB_H
-#define AMBILIGHTUSB_H
+#pragma once
 
 #include <QtGui>
 
-#include "struct_rgb.h"
-#include "timeevaluations.h"
+#include "StructRGB.h"
+#include "TimeEvaluations.h"
 
 #include "../../CommonHeaders/USB_ID.h"  /* For device VID, PID, vendor name and product name */
 #include "hidapi.h" /* USB HID API */
@@ -86,5 +85,3 @@ private:
     unsigned char read_buffer[65];    /* 0-ReportID, 1..65-data */
     unsigned char write_buffer[65];   /* 0-ReportID, 1..65-data */
 };
-
-#endif // AMBILIGHTUSB_H

@@ -24,14 +24,15 @@
  *
  */
 
-
 #include <QtGui>
+
 #include "GrabWidget.h"
 #include "ui_GrabWidget.h"
-#include "settings.h"
+
+#include "Settings.h"
+#include "capturemath.hpp"
 
 #include "debug.h"
-#include "capturemath.hpp"
 
 using lightpack::capture::math::getAvgColor;
 using lightpack::capture::math::setAlphaChannel;

@@ -1,5 +1,5 @@
 /*
- * struct_rgb.h
+ * StructRGB.h
  *
  *  Created on: 26.07.2010
  *      Author: Mike Shatohin (brunql)
@@ -24,19 +24,17 @@
  *
  */
 
+#pragma once
+
 #include <QRgb>
- 
-#ifndef STRUCT_RGB_H
-#define STRUCT_RGB_H
 
 struct StructRGB
 {
     QRgb rgb;
     QRgb steps;
+
     StructRGB( ){
         rgb = 0;
         steps = 0;
     }
 };
-
-#endif // STRUCT_RGB_H

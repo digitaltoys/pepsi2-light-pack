@@ -1,5 +1,5 @@
 /*
- * mainwindow.h
+ * MainWindow.h
  *
  *  Created on: 26.07.2010
  *      Author: Mike Shatohin (brunql)
@@ -24,17 +24,15 @@
  *
  */
 
-
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QtGui>
-#include "aboutdialog.h"            /* About dialog */
-#include "settings.h"               /* QSettings */
-#include "ambilightusb.h"           /* class AmbilightUsb */
-#include "grabmanager.h"            /* class GrabManager */
-#include "struct_rgb.h"
-#include "speedtest.h"
+#include "AboutDialog.h"            /* About dialog */
+#include "Settings.h"               /* QSettings */
+#include "AmbilightUsb.h"           /* class AmbilightUsb */
+#include "GrabManager.h"            /* class GrabManager */
+#include "StructRGB.h"
+#include "SpeedTest.h"
 
 namespace Ui {
     class MainWindow;
@@ -143,5 +141,3 @@ private:
 
     QTranslator *translator;
 };
-
-#endif // MAINWINDOW_H

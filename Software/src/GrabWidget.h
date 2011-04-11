@@ -1,5 +1,5 @@
 /*
- * movemewidget.h
+ * GrabWidget.h
  *
  *  Created on: 29.01.2011
  *      Author: Mike Shatohin (brunql)
@@ -24,8 +24,7 @@
  *
  */
 
-#ifndef MOVEMEWIDGET_H
-#define MOVEMEWIDGET_H
+#pragma once
 
 #include <QWidget>
 
@@ -34,7 +33,7 @@
 #include "ICaptureListenerCallback.hpp"
 
 namespace Ui {
-    class MoveMeWidget;
+    class GrabWidget;
 }
 
 using lightpack::capture::CaptureBuffer;
@@ -42,12 +41,12 @@ using lightpack::capture::CaptureRect;
 using lightpack::capture::ICaptureListenerCallback;
 using lightpack::capture::ICaptureSource;
 
-class MoveMeWidget : public QWidget, public ICaptureListenerCallback
+class GrabWidget : public QWidget, public ICaptureListenerCallback
 {
 Q_OBJECT
 public:
-    MoveMeWidget(int id, QWidget *parent = 0);
-    ~MoveMeWidget();
+    GrabWidget(int id, QWidget *parent = 0);
+    ~GrabWidget();
 
     void saveSizeAndPosition();
 
@@ -120,7 +119,7 @@ private:
     double m_coefGreen;
     double m_coefBlue;
 
-    Ui::MoveMeWidget *m_ui;
+    Ui::GrabWidget *m_ui;
 
     ICaptureSource *m_captureSource;
     QRgb m_color;
@@ -138,5 +137,3 @@ public:
     virtual bool isListenerCallbackEnabled();
     virtual void listenerBufferCallback(const CaptureBuffer &buffer);
 };
-
-#endif // MOVEMEWIDGET_H

@@ -1,5 +1,5 @@
 /*
- * settings.h
+ * Settings.h
  *
  *  Created on: 29.07.2010
  *      Author: Mike Shatohin (brunql)
@@ -24,9 +24,7 @@
  *
  */
 
-
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#pragma once
 
 #include <QSettings>
 #include <QVariant>
@@ -99,5 +97,3 @@ private:
     static QSettings * settingsMain; // store last used profile name
     static QString appDirPath; // path to store app generated stuff
 };
-
-#endif // SETTINGS_H

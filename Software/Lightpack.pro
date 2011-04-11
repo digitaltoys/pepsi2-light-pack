@@ -77,6 +77,8 @@ unix{
 win32 {
     # Windows version using WinAPI for HID
     LIBS    += -lhid -lusbcamd -lsetupapi
+
+    # TODO: use #ifdef #endif dude!
     SOURCES += hidapi/windows/hid.cpp
     # Windows version using WinAPI + GDI for grab colors
     LIBS    += -lgdi32
@@ -86,27 +88,27 @@ win32 {
 
 unix:!macx{
     # Linux version using libusb and hidapi codes
-    SOURCES += hidapi/linux/hid-libusb.c
-    # Linux version using Qt grabWindow(..) for grab colors
-    SOURCES += grab/grab_qt.cpp
+
+    # TODO: use #ifdef #endif dude!
+    SOURCES += hidapi/linux/hid-libusb.c    
 }
 
 macx{
     # MacOS version using libusb and hidapi codes
+
+    # TODO: use #ifdef #endif dude!
     SOURCES += hidapi/mac/hid.c
-    # MacOS version using Qt grabWindow(..) for grab colors
-    SOURCES += grab/grab_qt.cpp
 }
 
-INCLUDEPATH += ./inc ./hidapi ./capture
+INCLUDEPATH += ./src ./hidapi ./capture
 SOURCES += src/main.cpp \
-    src/mainwindow.cpp \
-    src/ambilightusb.cpp \
-    src/aboutdialog.cpp \
-    src/grabmanager.cpp \
-    src/movemewidget.cpp \
-    src/settings.cpp \
-    src/speedtest.cpp \
+    src/MainWindow.cpp \
+    src/AmbilightUsb.cpp \
+    src/AboutDialog.cpp \
+    src/GrabManager.cpp \
+    src/GrabWidget.cpp \
+    src/Settings.cpp \
+    src/SpeedTest.cpp \
     capture/CaptureSourceBase.cpp \
     capture/CaptureSourceQtGrabWindow.cpp \
     capture/CaptureSourceWindowsDirect3D9.cpp \
@@ -116,17 +118,17 @@ HEADERS += hidapi/hidapi.h \
     ../CommonHeaders/commands.h \
     ../CommonHeaders/RGB.h \
     ../CommonHeaders/USB_ID.h \
-    inc/mainwindow.h \
-    inc/ambilightusb.h \
-    inc/version.h \
-    inc/settings.h \
-    inc/aboutdialog.h \
-    inc/timeevaluations.h \
-    inc/grabmanager.h \
-    inc/movemewidget.h \
-    inc/struct_rgb.h \
-    inc/debug.h \
-    inc/speedtest.h \
+    src/MainWindow.h \
+    src/AmbilightUsb.h \
+    src/version.h \
+    src/Settings.h \
+    src/AboutDialog.h \
+    src/TimeEvaluations.h \
+    src/GrabManager.h \
+    src/GrabWidget.h \
+    src/StructRGB.h \
+    src/debug.h \
+    src/SpeedTest.h \
     src/ComputeColor.hpp \
     capture/capture.hpp \
     capture/CaptureSourceBase.hpp \
@@ -136,6 +138,6 @@ HEADERS += hidapi/hidapi.h \
     capture/CaptureSourceWindowsDirect3D9.hpp \
     capture/CaptureSourceWindowsWinApi.hpp \
     capture/capturemath.hpp
-FORMS += src/mainwindow.ui \
-    src/aboutdialog.ui \
-    src/movemewidget.ui
+FORMS += src/MainWindow.ui \
+    src/AboutDialog.ui \
+    src/GrabWidget.ui

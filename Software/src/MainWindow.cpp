@@ -1,5 +1,5 @@
 /*
- * mainwindow.cpp
+ * MainWindow.cpp
  *
  *  Created on: 26.07.2010
  *      Author: Mike Shatohin (brunql)
@@ -25,8 +25,8 @@
  */
 
 
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "MainWindow.h"
+#include "ui_MainWindow.h"
 
 #include <QDesktopWidget>
 #include <QPlainTextEdit>
