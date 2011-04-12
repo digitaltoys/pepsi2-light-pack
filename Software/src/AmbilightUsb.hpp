@@ -29,8 +29,8 @@
 
 #include <QtGui>
 
-#include "StructRGB.h"
-#include "TimeEvaluations.h"
+#include "StructRGB.hpp"
+#include "TimeEvaluations.hpp"
 
 #include "../../CommonHeaders/USB_ID.h"  /* For device VID, PID, vendor name and product name */
 #include "hidapi.h" /* USB HID API */

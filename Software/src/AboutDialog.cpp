@@ -24,12 +24,12 @@
  *
  */
  
-#include "AboutDialog.h"
+#include "AboutDialog.hpp"
 #include "ui_AboutDialog.h"
 
-#include "version.h"
+#include "version.hpp"
 
-#include "debug.h"
+#include "debug.hpp"
 
 AboutDialog::AboutDialog(QWidget *parent) :
     QDialog(parent),

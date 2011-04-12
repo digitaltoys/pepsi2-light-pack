@@ -29,7 +29,7 @@
 #include <QSettings>
 #include <QVariant>
 
-#include "debug.h"
+#include "debug.hpp"
 
 // Default values:
 

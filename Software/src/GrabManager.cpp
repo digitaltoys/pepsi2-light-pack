@@ -24,14 +24,14 @@
  *
  */
 
-#include "GrabManager.h"
+#include "GrabManager.hpp"
 
 #include "CaptureSourceWindowsWinApi.hpp"
 #include "CaptureSourceQtGrabWindow.hpp"
 
 #include "capturemath.hpp"
 
-#include "debug.h"
+#include "debug.hpp"
 
 using namespace lightpack::capture::math;
 

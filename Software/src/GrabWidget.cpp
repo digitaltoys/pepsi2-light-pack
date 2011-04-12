@@ -26,13 +26,13 @@
 
 #include <QtGui>
 
-#include "GrabWidget.h"
+#include "GrabWidget.hpp"
 #include "ui_GrabWidget.h"
 
-#include "Settings.h"
+#include "Settings.hpp"
 #include "capturemath.hpp"
 
-#include "debug.h"
+#include "debug.hpp"
 
 using lightpack::capture::math::getAvgColor;
 using lightpack::capture::math::setAlphaChannel;

@@ -24,7 +24,7 @@
  *
  */
 
-#include "debug.h"
+#include "debug.hpp"
 #include "CaptureSourceBase.hpp"
 
 //#include <QApplication>

@@ -25,11 +25,11 @@
  */
 
 
-#include "AmbilightUsb.h"
+#include "AmbilightUsb.hpp"
 
 #include <unistd.h>
 
-#include "debug.h"
+#include "debug.hpp"
 
 AmbilightUsb::AmbilightUsb(QObject *parent) :
         QObject(parent)
