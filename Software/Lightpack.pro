@@ -129,7 +129,6 @@ HEADERS += hidapi/hidapi.h \
     src/StructRGB.hpp \
     src/debug.hpp \
     src/SpeedTest.hpp \
-    src/ComputeColor.hpp \
     capture/capture.hpp \
     capture/CaptureSourceBase.hpp \
     capture/ICaptureSource.hpp \
