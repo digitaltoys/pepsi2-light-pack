@@ -27,21 +27,21 @@
 
 #include <QtGui>
 #include <iostream>
-#include "mainwindow.h"
+#include "MainWindow.hpp"
 
-#include "settings.h"
-#include "version.h"
-#include "ambilightusb.h"
+#include "Settings.hpp"
+#include "Version.hpp"
+#include "AmbilightUsb.hpp"
 
-#include <sys/time.h>
-#include "time.h"
+//#include <sys/time.h>
+//#include "time.h"
 
 #include <QFileInfo>
 
 using namespace std;
 
 
-#include "debug.h"
+#include "debug.hpp"
 unsigned debugLevel = 0;
 
 
@@ -175,8 +175,8 @@ int main(int argc, char **argv)
 
     if(argc > 1){
         if(strcmp(argv[1], "--off") == 0){
-            AmbilightUsb ambilight_usb;
-            ambilight_usb.offLeds();
+            AmbilightUsb ambilightUsb;
+            ambilightUsb.offLeds();
             return 0;
         }else if( strcmp(argv[1], "--debug_high") == 0 ){
             debugLevel = Debug::HighLevel;

@@ -30,7 +30,7 @@
 #include <QList>
 
 #include "capture.hpp"
-#include "StructRGB.h"
+#include "StructRGB.hpp"
 
 namespace lightpack
 {

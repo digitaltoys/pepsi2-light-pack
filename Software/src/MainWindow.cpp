@@ -25,13 +25,13 @@
  */
 
 
-#include "MainWindow.h"
+#include "MainWindow.hpp"
 #include "ui_MainWindow.h"
 
 #include <QDesktopWidget>
 #include <QPlainTextEdit>
 
-#include "debug.h"
+#include "debug.hpp"
 
 // ----------------------------------------------------------------------------
 // Lightpack settings window

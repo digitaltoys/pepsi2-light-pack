@@ -118,17 +118,17 @@ HEADERS += hidapi/hidapi.h \
     ../CommonHeaders/commands.h \
     ../CommonHeaders/RGB.h \
     ../CommonHeaders/USB_ID.h \
-    src/MainWindow.h \
-    src/AmbilightUsb.h \
-    src/version.h \
-    src/Settings.h \
-    src/AboutDialog.h \
-    src/TimeEvaluations.h \
-    src/GrabManager.h \
-    src/GrabWidget.h \
-    src/StructRGB.h \
-    src/debug.h \
-    src/SpeedTest.h \
+    src/MainWindow.hpp \
+    src/AmbilightUsb.hpp \
+    src/version.hpp \
+    src/Settings.hpp \
+    src/AboutDialog.hpp \
+    src/TimeEvaluations.hpp \
+    src/GrabManager.hpp \
+    src/GrabWidget.hpp \
+    src/StructRGB.hpp \
+    src/debug.hpp \
+    src/SpeedTest.hpp \
     src/ComputeColor.hpp \
     capture/capture.hpp \
     capture/CaptureSourceBase.hpp \

@@ -29,10 +29,10 @@
 #include <QtGui>
 
 #include "../../CommonHeaders/RGB.h"        /* Led defines */
-#include "Settings.h"
-#include "TimeEvaluations.h"
-#include "StructRGB.h"
-#include "GrabWidget.h"
+#include "Settings.hpp"
+#include "TimeEvaluations.hpp"
+#include "StructRGB.hpp"
+#include "GrabWidget.hpp"
 
 #include "ICaptureSource.hpp"
 

@@ -27,12 +27,12 @@
 #pragma once
 
 #include <QtGui>
-#include "AboutDialog.h"            /* About dialog */
-#include "Settings.h"               /* QSettings */
-#include "AmbilightUsb.h"           /* class AmbilightUsb */
-#include "GrabManager.h"            /* class GrabManager */
-#include "StructRGB.h"
-#include "SpeedTest.h"
+#include "AboutDialog.hpp"            /* About dialog */
+#include "Settings.hpp"               /* QSettings */
+#include "AmbilightUsb.hpp"           /* class AmbilightUsb */
+#include "GrabManager.hpp"            /* class GrabManager */
+#include "StructRGB.hpp"
+#include "SpeedTest.hpp"
 
 namespace Ui {
     class MainWindow;

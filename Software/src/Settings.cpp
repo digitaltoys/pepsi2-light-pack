@@ -24,7 +24,7 @@
  *
  */
 
-#include "Settings.h"
+#include "Settings.hpp"
 
 #include <QApplication>
 #include <QDesktopWidget>
@@ -35,7 +35,7 @@
 
 #include "../../CommonHeaders/RGB.h"        /* Led defines */
 
-#include "debug.h"
+#include "debug.hpp"
 
 QSettings * Settings::settingsNow;
 QSettings * Settings::settingsMain; // LightpackMain.conf contains last profile
