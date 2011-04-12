@@ -46,31 +46,36 @@ namespace math
         return (x == 0) ? 1 : x;
     }
 
-    QRgb getAvgColor(const CaptureBuffer & buffer)
+    QRgb getAvgColor(const CaptureBuffer & buffer, const int & grabPrecision)
     {
         int index = 0;
-        int pixels = buffer.height * buffer.width;
+        int pixelsCount = 0;
         int bytesCount = buffer.bitsCount / 8;
 
         unsigned r = 0;
         unsigned g = 0;
         unsigned b = 0;
 
-        for (int y = 0; y < buffer.height; y += /*todo grabPrecision*/1)
+        for (int y = 0; y < buffer.height; y += grabPrecision)
         {
-            for (int x = 0; x < buffer.width; x += /*todo grabPrecision*/1)
+            for (int x = 0; x < buffer.width; x += grabPrecision)
             {
                 index = (y * buffer.width + x) * bytesCount;
 
                 b += buffer.data[index];
                 g += buffer.data[index + 1];
                 r += buffer.data[index + 2];
+
+                pixelsCount++;
             }
         }
 
-        r = round((double) r / pixels);
-        g = round((double) g / pixels);
-        b = round((double) b / pixels);
+        if (pixelsCount != 0)
+        {
+            r = round((double) r / pixelsCount);
+            g = round((double) g / pixelsCount);
+            b = round((double) b / pixelsCount);
+        }
 
         QRgb result = qRgb(r, g, b);
 

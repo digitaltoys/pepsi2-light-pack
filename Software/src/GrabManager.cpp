@@ -426,6 +426,9 @@ void GrabManager::setMinLevelOfSensivity(int value)
 
 void GrabManager::setGrabPrecision(int value)
 {
-    //GrabWinAPI::setGrabPrecision( value );
+    for (int i = 0; i < m_grabWidgets.count(); i++)
+    {
+        m_grabWidgets[i]->setGrabPrecision(value);
+    }
     Settings::setValue("GrabPrecision", value);
 }
