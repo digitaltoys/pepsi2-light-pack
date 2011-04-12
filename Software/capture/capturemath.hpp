@@ -38,7 +38,7 @@ namespace capture
 {
 namespace math
 {
-    QRgb getAvgColor(const CaptureBuffer & buffer);
+    QRgb getAvgColor(const CaptureBuffer & buffer, const int & grabPrecision);
 
     void checkMinimumLevelOfSensitivity(
             QList<StructRGB> & colors,

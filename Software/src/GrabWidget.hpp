@@ -57,6 +57,7 @@ public:
 
     void setCaptureSource(ICaptureSource *captureSource);
     QRgb getColor();
+    void setGrabPrecision(int value);
 
 signals:
     void resizeOrMoveStarted();
@@ -118,6 +119,8 @@ private:
     double m_coefRed;
     double m_coefGreen;
     double m_coefBlue;
+
+    int m_grabPrecision;
 
     Ui::GrabWidget *m_ui;
 
