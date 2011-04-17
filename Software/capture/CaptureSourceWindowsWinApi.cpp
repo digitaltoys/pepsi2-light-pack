@@ -24,6 +24,8 @@
  *
  */
 
+#ifdef Q_WS_WIN
+
 #include "windows.h"
 
 #include "CaptureSourceWindowsWinApi.hpp"
@@ -111,3 +113,4 @@ int a = 234;
     }
 }
 }
+#endif

@@ -25,7 +25,7 @@
  */
 
 #pragma once
-
+#ifdef Q_WS_WIN
 #include "CaptureSourceBase.hpp"
 
 namespace lightpack
@@ -47,3 +47,4 @@ namespace capture
     };
 }
 }
+#endif
