@@ -40,8 +40,11 @@ GrabManager::GrabManager(QWidget *parent) : QWidget(parent)
     DEBUG_LOW_LEVEL << Q_FUNC_INFO;
 
     // todo select capture type
+#ifdef Q_WS_WIN
     m_captureSource = (ICaptureSource*)(new lightpack::capture::CaptureSourceWindowsWinApi());
-    //m_captureSource = (ICaptureSource*)(new lightpack::capture::CaptureSourceQtGrabWindow());
+#else
+    m_captureSource = (ICaptureSource*)(new lightpack::capture::CaptureSourceQtGrabWindow());
+#endif
 
     m_timerGrab = new QTimer(this);
     m_timeEval = new TimeEvaluations();
