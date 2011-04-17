@@ -122,7 +122,7 @@ void MainWindow::connectSignalsSlots()
     connect(ui->checkBox_USB_SendDataOnlyIfColorsChanges, SIGNAL(toggled(bool)), grabManager, SLOT(setUpdateColorsOnlyIfChanges(bool)));
     connect(ui->checkBox_AVG_Colors, SIGNAL(toggled(bool)), grabManager, SLOT(setAvgColorsOnAllLeds(bool)));
     connect(ui->spinBox_MinLevelOfSensitivity, SIGNAL(valueChanged(int)), grabManager, SLOT(setMinLevelOfSensivity(int)));
-    connect(ui->spinBox_GrabPrecision, SIGNAL(valueChanged(int)), grabManager, SLOT(setGrabPrecision(int)));
+    connect(ui->spinBox_GrabPercent, SIGNAL(valueChanged(int)), grabManager, SLOT(setGrabPercent(int)));
     connect(this, SIGNAL(settingsProfileChanged()), grabManager, SLOT(settingsProfileChanged()));    
 
     // Connect GrabManager with ambilightUsb
@@ -904,7 +904,7 @@ void MainWindow::loadSettingsToMainWindow()
 
     ui->spinBox_SlowdownGrab->setValue              ( Settings::value("GrabSlowdownMs").toInt() );
     ui->spinBox_MinLevelOfSensitivity->setValue     ( Settings::value("MinimumLevelOfSensitivity").toInt() );
-    ui->spinBox_GrabPrecision->setValue             ( Settings::value("GrabPrecision").toInt() );
+    ui->spinBox_GrabPercent->setValue               ( Settings::value("GrabPercent").toInt() );
     ui->checkBox_AVG_Colors->setChecked             ( Settings::value("IsAvgColorsOn").toBool() );
 
     ui->horizontalSlider_HW_OCR->setValue           ( Settings::value("Firmware/TimerOCR").toInt() );

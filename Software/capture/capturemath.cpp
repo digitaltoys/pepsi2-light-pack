@@ -46,7 +46,7 @@ namespace math
         return (x == 0) ? 1 : x;
     }
 
-    QRgb getAvgColor(const CaptureBuffer & buffer, const int & grabPrecision)
+    QRgb getAvgColor(const CaptureBuffer & buffer, const int & grabPercent)
     {
         int index = 0;
         int pixelsCount = 0;
@@ -55,6 +55,11 @@ namespace math
         unsigned r = 0;
         unsigned g = 0;
         unsigned b = 0;
+
+        int grabPrecision = round( sqrt( 100.0 / (double)grabPercent ) );
+
+        if (grabPrecision <= 0)
+            grabPrecision = 1;
 
         for (int y = 0; y < buffer.height; y += grabPrecision)
         {
