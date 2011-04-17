@@ -110,7 +110,7 @@ void GrabWidget::settingsProfileChanged()
     m_coefGreen = loadCoefWithCheck("CoefGreen");
     m_coefBlue = loadCoefWithCheck("CoefBlue");
 
-    setGrabPrecision(Settings::value("GrabPrecision").toInt());
+    setGrabPercent(Settings::value("GrabPercent").toInt());
 
     this->move( Settings::value("LED_" + QString::number(m_selfId+1) + "/Position").toPoint() );
     this->resize( Settings::value("LED_" + QString::number(m_selfId+1) + "/Size").toSize() );
@@ -532,16 +532,16 @@ QRgb GrabWidget::getColor()
     return m_color;
 }
 
-void GrabWidget::setGrabPrecision(int value)
+void GrabWidget::setGrabPercent(int value)
 {
-    if(value > 0)
+    if( value > 0 && value <= 100)
     {
-        m_grabPrecision = value;
+        m_grabPercent = value;
     } else {
-        qWarning() << Q_FUNC_INFO << "value <= 0, value =" << value << ", set default = 1";
+        qWarning() << Q_FUNC_INFO << "value <= 0 or >100 , value =" << value << ", set default = 50";
 
-        m_grabPrecision = 1;
-        Settings::setValue("GrabPrecision", m_grabPrecision);
+        m_grabPercent = 50;
+        Settings::setValue("GrabPercent", m_grabPercent);
     }
 }
 
@@ -624,7 +624,7 @@ bool GrabWidget::isListenerCallbackEnabled()
 
 void GrabWidget::listenerBufferCallback(const CaptureBuffer &buffer)
 {
-    m_color = getAvgColor(buffer, m_grabPrecision);
+    m_color = getAvgColor(buffer, m_grabPercent);
 
     // White balance
     unsigned r = qRed(m_color)   * m_coefRed;
