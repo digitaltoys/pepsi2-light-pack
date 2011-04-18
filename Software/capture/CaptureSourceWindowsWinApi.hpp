@@ -25,7 +25,11 @@
  */
 
 #pragma once
+
+#include <qglobal.h> /* define Q_WS_* macroses */
+
 #ifdef Q_WS_WIN
+
 #include "CaptureSourceBase.hpp"
 
 namespace lightpack
@@ -47,4 +51,6 @@ namespace capture
     };
 }
 }
+
 #endif
+

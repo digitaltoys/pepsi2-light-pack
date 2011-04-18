@@ -24,6 +24,8 @@
  *
  */
 
+#include <qglobal.h> /* define Q_WS_* macroses */
+
 #ifdef Q_WS_WIN
 
 #include "windows.h"
@@ -114,3 +116,4 @@ int a = 234;
 }
 }
 #endif
+
