@@ -207,7 +207,6 @@ namespace math
 
         return result;
     }
-
 }
 }
 }

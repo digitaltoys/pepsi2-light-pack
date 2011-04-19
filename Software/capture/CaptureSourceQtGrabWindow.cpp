@@ -33,47 +33,36 @@ namespace lightpack
 {
 namespace capture
 {
-    CaptureSourceQtGrabWindow::CaptureSourceQtGrabWindow()
+    void CaptureSourceQtGrabWindow::fillData()
     {
-        buffer.width = 1;
-        buffer.height = 1;
-        buffer.bitsCount = 32;
-        buffer.dataLength = buffer.width * buffer.height * 4;
-        buffer.data = (uint8_t *)malloc(buffer.dataLength);
+        m_bitsCount = 32; // todo
     }
 
-    CaptureSourceQtGrabWindow::~CaptureSourceQtGrabWindow()
+    void CaptureSourceQtGrabWindow::fillBufferForRect(const CaptureRect &rect, CaptureBuffer *buffer)
     {
-        free(buffer.data);
-    }
+        QPixmap pixel = QPixmap::grabWindow(
+            QApplication::desktop()->winId(),
+            rect.left,
+            rect.top,
+            rect.width,
+            rect.height);
+        QPixmap scaledPixel = pixel.scaled(1,1, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        QImage image = scaledPixel.toImage();
+        QRgb color = image.pixel(0,0);
+        int bytesCount = m_bitsCount / 8;
 
-    void CaptureSourceQtGrabWindow::capture()
-    {
-        if (m_listeners.empty())
-            return;
+        CaptureBuffer &buff = *buffer;
 
-        for (ListenerInfoIterator it = m_listeners.begin(); it != m_listeners.end(); it++)
-        {
-            if (it->callback->isListenerCallbackEnabled())
-            {
-                QPixmap pix = QPixmap::grabWindow(QApplication::desktop()->winId(),
-                                                  it->rect.left,
-                                                  it->rect.top,
-                                                  it->rect.width,
-                                                  it->rect.height);
-
-                QPixmap scaledPix = pix.scaled(1,1, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-                QImage im = scaledPix.toImage();
-                QRgb result = im.pixel(0,0);
-
-                buffer.data[0] = qBlue(result);
-                buffer.data[1] = qGreen(result);
-                buffer.data[2] = qRed(result);
-
-                it->callback->listenerBufferCallback(buffer);
-            }
-        }
+        buff.width = 1;
+        buff.height = 1;
+        buff.bitsCount = m_bitsCount;
+        buff.dataLength = buff.width * buff.height * bytesCount;
+        buff.data = (uint8_t *)malloc(buff.dataLength);
+        // todo
+        buff.data[0] = qBlue(color);
+        buff.data[1] = qGreen(color);
+        buff.data[2] = qRed(color);
+        buff.data[3] = 0;
     }
 }
 }
-

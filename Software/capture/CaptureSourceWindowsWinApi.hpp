@@ -26,7 +26,7 @@
 
 #pragma once
 
-#include <qglobal.h> /* define Q_WS_* macroses */
+#include <qglobal.h>
 
 #ifdef Q_WS_WIN
 
@@ -38,19 +38,12 @@ namespace capture
 {
     class CaptureSourceWindowsWinApi : CaptureSourceBase
     {
-    private:
-        int m_dataLength;
-        uint8_t *m_data;
-    public:
-        CaptureSourceWindowsWinApi();
-        ~CaptureSourceWindowsWinApi();
-
-    // ICaptureSource
-    public:
-        virtual void capture();
+    // CaptureSourceBase
+    protected:
+        virtual void fillData();
+        virtual void fillBufferForRect(const CaptureRect &rect, CaptureBuffer *buffer);
     };
 }
 }
 
 #endif
-

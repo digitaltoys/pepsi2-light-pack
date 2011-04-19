@@ -26,13 +26,15 @@
 
 #include "GrabManager.hpp"
 
-#include "CaptureSourceWindowsWinApi.hpp"
-#include "CaptureSourceQtGrabWindow.hpp"
-
+#include "debug.hpp"
 #include "capturemath.hpp"
 
-#include "debug.hpp"
+#include "CaptureSourceWindowsWinApi.hpp"
+#include "CaptureSourceWindowsDirect3D9.hpp"
+#include "CaptureSourceWindowsDWM.hpp"
+#include "CaptureSourceQtGrabWindow.hpp"
 
+using namespace lightpack::capture;
 using namespace lightpack::capture::math;
 
 GrabManager::GrabManager(QWidget *parent) : QWidget(parent)
@@ -40,11 +42,10 @@ GrabManager::GrabManager(QWidget *parent) : QWidget(parent)
     DEBUG_LOW_LEVEL << Q_FUNC_INFO;
 
     // todo select capture type
-#ifdef Q_WS_WIN
-    m_captureSource = (ICaptureSource*)(new lightpack::capture::CaptureSourceWindowsWinApi());
-#else
-    m_captureSource = (ICaptureSource*)(new lightpack::capture::CaptureSourceQtGrabWindow());
-#endif
+    //m_captureSource = (ICaptureSource*)(new CaptureSourceWindowsWinApi());
+    m_captureSource = (ICaptureSource*)(new CaptureSourceWindowsDirect3D9());
+    //m_captureSource = (ICaptureSource*)(new CaptureSourceQtGrabWindow());
+    //m_captureSource = (ICaptureSource*)(new CaptureSourceWindowsDWM());
 
     m_timerGrab = new QTimer(this);
     m_timeEval = new TimeEvaluations();
@@ -152,7 +153,7 @@ void GrabManager::firstWidgetPositionChanged()
 {
     DEBUG_LOW_LEVEL << Q_FUNC_INFO;
 
-    //screenSavedIndex = QApplication::desktop()->screenNumber( ledWidgets[0] );
+    //todo screenSavedIndex = QApplication::desktop()->screenNumber( ledWidgets[0] );
     //screenSaved = QApplication::desktop()->screenGeometry( screenSavedIndex );
 
     //if (isGrabWinAPI)
@@ -247,14 +248,10 @@ void GrabManager::updateLedsColorsIfChanged()
         m_captureSource->capture();
 
         for (int i = 0; i < LEDS_COUNT; i++)
-        {
             m_colorsNew[i].rgb = m_grabWidgets[i]->getColor();
-        }
 
         if (m_avgColorsOnAllLeds)
-        {
             setAvgColor(m_colorsNew);
-        }
 
         checkMinimumLevelOfSensitivity(m_colorsNew, m_minLevelOfSensivity);
 
@@ -293,7 +290,7 @@ void GrabManager::setAmbilightOn(bool isAmbilightOn, bool isErrorState)
 
     if (isAmbilightOn)
     {
-        m_timerGrab->start( 0 );
+        m_timerGrab->start(0);
     } else {
         // Switch ambilight off
         m_timerGrab->stop();
@@ -327,7 +324,6 @@ void GrabManager::settingsProfileChanged()
 
     this->m_avgColorsOnAllLeds = Settings::value("IsAvgColorsOn").toBool();
     this->m_minLevelOfSensivity = Settings::value("MinimumLevelOfSensitivity").toInt();
-    //GrabWinAPI::setGrabPrecision( Settings::value("GrabPrecision").toInt() );
 
     this->m_ambilightDelayMs = Settings::value("GrabSlowdownMs").toInt();
     this->m_colorDepth = Settings::value("Firmware/ColorDepth").toInt();
@@ -341,7 +337,7 @@ void GrabManager::switchQtWinApi(bool isWinApi)
 {
     DEBUG_LOW_LEVEL << Q_FUNC_INFO << isWinApi;
 
-    //this->isGrabWinAPI = isWinApi;
+    //todo this->isGrabWinAPI = isWinApi;
 }
 
 

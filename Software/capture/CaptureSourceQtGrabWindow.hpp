@@ -34,16 +34,10 @@ namespace capture
 {
     class CaptureSourceQtGrabWindow : CaptureSourceBase
     {
-    private:
-        CaptureBuffer buffer;
-
-    public:
-        CaptureSourceQtGrabWindow();
-        ~CaptureSourceQtGrabWindow();
-
-    // ICaptureSource
-    public:
-        virtual void capture();
+    // CaptureSourceBase
+    protected:
+        virtual void fillData();
+        virtual void fillBufferForRect(const CaptureRect &rect, CaptureBuffer *buffer);
     };
 }
 }

@@ -69,21 +69,35 @@ namespace capture
     class CaptureSourceBase : ICaptureSource
     {
     protected:
+        // todo move to private
+        typedef std::list<ListenerInfo>::iterator ListenerInfoIterator;
+        typedef std::list<ListenerInfo>::const_iterator ListenerInfoConstIterator;
+
         std::list<ListenerInfo> m_listeners;
         CaptureRect m_rect;
+        int m_bitsCount;
+        int m_dataLength;
+        uint8_t *m_data;
 
         CaptureSourceBase();
 
+        virtual void fillData() = 0;
+        virtual void fillBufferForRect(const CaptureRect &rect, CaptureBuffer *buffer) = 0;
+
         void recalculateRect();
+        int getDataLength(int width, int height, int bitsCount);
+        void checkAndResizeData(int newDataLength);
+        void defaultFillBufferForRect(const CaptureRect &rect, CaptureBuffer *buffer) const;
         void copyToSubBufferData(
-            const int &bytesCount,
+            const int &bitsCount,
             const CaptureRect &fromRect, const uint8_t *fromData,
-            const CaptureRect &toRect, uint8_t *toData);
+            const CaptureRect &toRect, uint8_t *toData) const;
+    public:
+        ~CaptureSourceBase();
 
     // ICaptureSource
     public:
-        typedef std::list<ListenerInfo>::iterator ListenerInfoIterator;
-        typedef std::list<ListenerInfo>::const_iterator ListenerInfoConstIterator;
+        virtual void capture();
 
         virtual void subscribeListener(ICaptureListenerCallback *callback, const CaptureRect &rect);
         virtual bool hasListener(ICaptureListenerCallback *callback) const;

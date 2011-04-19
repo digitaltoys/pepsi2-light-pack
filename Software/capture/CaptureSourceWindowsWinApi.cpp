@@ -24,37 +24,20 @@
  *
  */
 
-#include <qglobal.h> /* define Q_WS_* macroses */
+#include "CaptureSourceWindowsWinApi.hpp"
 
 #ifdef Q_WS_WIN
 
-#include "windows.h"
-
-#include "CaptureSourceWindowsWinApi.hpp"
+#include <windows.h>
 
 namespace lightpack
 {
 namespace capture
 {
-    CaptureSourceWindowsWinApi::CaptureSourceWindowsWinApi()
-        : m_dataLength(0), m_data(0)
+    // CaptureSourceBase
+
+    void CaptureSourceWindowsWinApi::fillData()
     {
-    }
-
-    CaptureSourceWindowsWinApi::~CaptureSourceWindowsWinApi()
-    {
-        if (m_data != 0)
-            free(m_data);
-    }
-
-    // todo use template methods?
-    void CaptureSourceWindowsWinApi::capture()
-    {
-        if (m_listeners.empty())
-            return;
-
-int started = GetTickCount();
-
         HDC hScreenDC = CreateDC(TEXT("DISPLAY"), NULL, NULL, NULL);
         HDC hMemDC = CreateCompatibleDC(hScreenDC);
         HBITMAP hBitmap = CreateCompatibleBitmap(hScreenDC, m_rect.width, m_rect.height);
@@ -70,50 +53,22 @@ int started = GetTickCount();
         BITMAP bitmap;
         GetObject(hBitmap, sizeof(BITMAP), &bitmap);
 
-        int dataLength = bitmap.bmWidthBytes * bitmap.bmHeight;
-        int bytesCount = bitmap.bmBitsPixel / 8;
+        m_bitsCount = bitmap.bmBitsPixel;
 
-        if (m_dataLength != dataLength)
-        {
-            if (m_data != 0)
-                free(m_data);
+        int dataLength = getDataLength(m_rect.width, m_rect.height, m_bitsCount);
+        checkAndResizeData(dataLength);
 
-            m_dataLength = dataLength;
-            m_data = (uint8_t *)malloc(m_dataLength);
-        }
-
-        GetBitmapBits(hBitmap, m_dataLength, m_data);
+        GetBitmapBits(hBitmap, dataLength, m_data);
         DeleteObject(hBitmap);
         DeleteDC(hMemDC);
         DeleteDC(hScreenDC);
+    }
 
-int ended = GetTickCount() - started;
-started = GetTickCount();
-
-        for (ListenerInfoIterator it = m_listeners.begin(); it != m_listeners.end(); it++)
-        {
-            if (it->callback->isListenerCallbackEnabled())
-
-            {
-                CaptureBuffer buffer;
-                buffer.width = it->rect.width;
-                buffer.height = it->rect.height;
-                buffer.bitsCount = bitmap.bmBitsPixel;
-                buffer.dataLength = buffer.width * buffer.height * bytesCount;
-                buffer.data = (uint8_t *)malloc(buffer.dataLength);
-
-                copyToSubBufferData(bytesCount, m_rect, m_data, it->rect, buffer.data);
-
-                it->callback->listenerBufferCallback(buffer);
-
-                free(buffer.data);
-            }
-        }
-
-ended = GetTickCount() - started;
-int a = 234;
+    void CaptureSourceWindowsWinApi::fillBufferForRect(const CaptureRect &rect, CaptureBuffer *buffer)
+    {
+        defaultFillBufferForRect(rect, buffer);
     }
 }
 }
-#endif
 
+#endif

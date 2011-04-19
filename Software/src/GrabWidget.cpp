@@ -34,8 +34,7 @@
 
 #include "debug.hpp"
 
-using lightpack::capture::math::getAvgColor;
-using lightpack::capture::math::setAlphaChannel;
+using namespace lightpack::capture::math;
 
 // Colors changes when middle button clicked
 const QColor GrabWidget::m_widgetColors[GrabWidget::ColorsCount][2] = {

@@ -82,8 +82,9 @@ win32 {
     SOURCES += hidapi/windows/hid.cpp
     # Windows version using WinAPI + GDI for grab colors
     LIBS    += -lgdi32
-    # LIBS    += -ld3d9
-    # INCLUDEPATH += "C:\Program Files\Microsoft DirectX SDK (June 2010)\Include"
+
+    LIBS    += -ld3d9
+    INCLUDEPATH += "C:\Program Files\Microsoft DirectX SDK (June 2010)\Include"
 }
 
 unix:!macx{
@@ -113,7 +114,8 @@ SOURCES += src/main.cpp \
     capture/CaptureSourceQtGrabWindow.cpp \
     capture/CaptureSourceWindowsDirect3D9.cpp \
     capture/CaptureSourceWindowsWinApi.cpp \
-    capture/capturemath.cpp
+    capture/capturemath.cpp \
+    capture/CaptureSourceWindowsDWM.cpp
 HEADERS += hidapi/hidapi.h \
     ../CommonHeaders/commands.h \
     ../CommonHeaders/RGB.h \
@@ -136,7 +138,8 @@ HEADERS += hidapi/hidapi.h \
     capture/CaptureSourceQtGrabWindow.hpp \
     capture/CaptureSourceWindowsDirect3D9.hpp \
     capture/CaptureSourceWindowsWinApi.hpp \
-    capture/capturemath.hpp
+    capture/capturemath.hpp \
+    capture/CaptureSourceWindowsDWM.hpp
 FORMS += src/MainWindow.ui \
     src/AboutDialog.ui \
     src/GrabWidget.ui

@@ -86,7 +86,7 @@ namespace capture
                 : 0;
         }
 
-    //    const QPoint & getQPointCenter(){
+    //   todo const QPoint & getQPointCenter(){
     //        return QPoint( left + width / 2, top + height / 2 );
     //    }
     };

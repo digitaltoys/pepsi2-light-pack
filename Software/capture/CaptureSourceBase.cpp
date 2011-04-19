@@ -38,6 +38,7 @@ namespace lightpack
 namespace capture
 {
     CaptureSourceBase::CaptureSourceBase()
+        : m_bitsCount(0), m_dataLength(0), m_data(NULL)
     {
     }
 
@@ -71,21 +72,53 @@ namespace capture
             if (it->rect.getBottom() > m_rect.getBottom())
                 m_rect.setBottom(it->rect.getBottom());
         }
+    }
 
+    int CaptureSourceBase::getDataLength(int width, int height, int bitsCount)
+    {
+        int bytesCount = bitsCount / 8;
+        int result = width * height * bytesCount;
+
+        return result;
+    }
+
+    void CaptureSourceBase::checkAndResizeData(int newDataLength)
+    {
+        if (m_dataLength != newDataLength)
+        {
+            if (m_data != NULL)
+                free(m_data);
+
+            m_dataLength = newDataLength;
+            m_data = (uint8_t *)malloc(m_dataLength);
+        }
+    }
+
+    void CaptureSourceBase::defaultFillBufferForRect(const CaptureRect &rect, CaptureBuffer *buffer) const
+    {
+        CaptureBuffer &buff = *buffer;
+        int bytesCount = m_bitsCount / 8;
+
+        buff.width = rect.width;
+        buff.height = rect.height;
+        buff.bitsCount = m_bitsCount;
+        buff.dataLength = buff.width * buff.height * bytesCount;
+        buff.data = (uint8_t *)malloc(buff.dataLength);
+
+        copyToSubBufferData(m_bitsCount, m_rect, m_data, rect, (*buffer).data);
     }
 
     void CaptureSourceBase::copyToSubBufferData(
-        const int &bytesCount,
+        const int &bitsCount,
         const CaptureRect &fromRect, const uint8_t *fromData,
-        const CaptureRect &toRect, uint8_t *toData)
+        const CaptureRect &toRect, uint8_t *toData) const
     {
+        int bytesCount = bitsCount / 8;
         int toRectLineWidth = toRect.width * bytesCount;
 
         for (int y = 0; y < toRect.height; y++)
         {
-            int dstOffset =
-                y
-                * toRectLineWidth;
+            int dstOffset = y * toRectLineWidth;
             int srcOffset =
                 bytesCount
                 * (
@@ -93,10 +126,20 @@ namespace capture
                     + (toRect.left - fromRect.left)
                 );
 
+            // todo
             memcpy(
                 toData + dstOffset,
                 fromData + srcOffset,
-                toRectLineWidth);
+                toRectLineWidth);/**/
+        }
+    }
+
+    CaptureSourceBase::~CaptureSourceBase()
+    {
+        if (m_data != NULL)
+        {
+            free(m_data);
+            m_data = NULL;
         }
     }
 
@@ -124,6 +167,50 @@ namespace capture
     }*/
 
     // ICaptureSource
+
+    void CaptureSourceBase::capture()
+    {
+        if (m_listeners.empty())
+            return;
+
+//int started = GetTickCount();
+
+        fillData();
+
+//int ended = GetTickCount() - started;
+//started = GetTickCount();
+
+        for (ListenerInfoIterator it = m_listeners.begin(); it != m_listeners.end(); it++)
+        {
+            if (it->callback->isListenerCallbackEnabled())
+            {
+                CaptureBuffer buffer;
+                fillBufferForRect(it->rect, &buffer);
+
+                //if (buffer.width == 0)
+                // todo warning "Width is 0"
+
+                //if (buffer.height == 0)
+                // todo warning "Height is 0"
+
+                //if (buffer.bitsCount == 0)
+                // todo warning "Bits count is 0"
+
+                //if (buffer.dataLength == 0)
+                //    todo warning "Data length is 0"
+
+                //if (buffer.data == NULL)
+                //    todo warninig "data is empty"
+
+                it->callback->listenerBufferCallback(buffer);
+
+                free(buffer.data);
+            }
+        }
+
+//ended = GetTickCount() - started;
+//int a = 234;
+    }
 
     void CaptureSourceBase::subscribeListener(ICaptureListenerCallback *callback, const CaptureRect &rect)
     {
@@ -180,7 +267,7 @@ namespace capture
     {
         if (!hasListener(callback))
         {
-            qWarning() << "Listener have no";
+            qWarning() << "Listener have no subscribers";
             return;
         }
 
