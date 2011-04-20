@@ -216,6 +216,30 @@ QString Settings::getApplicationDirPath()
     return appDirPath;
 }
 
+QPoint Settings::getDefaultPosition(int ledIndex)
+{
+    QPoint result;
+
+    QRect screen = QApplication::desktop()->screenGeometry();
+
+    int ledsCountDiv2 = LEDS_COUNT / 2;
+
+    if (ledIndex < ledsCountDiv2)
+    {
+        result.setX(0);
+    } else {
+        result.setX(screen.width() - LED_FIELD_WIDTH_DEFAULT_VALUE);
+    }
+
+    int height = ledsCountDiv2 * LED_FIELD_HEIGHT_DEFAULT_VALUE;
+
+    int y = screen.height() / 2 - height / 2;
+
+    result.setY(y + (ledIndex % ledsCountDiv2) * LED_FIELD_HEIGHT_DEFAULT_VALUE);
+
+    return result;
+}
+
 
 // private
 
