@@ -31,29 +31,42 @@
 #include <QTextStream>
 #include <QTime>
 
-class SpeedTest : public QObject
+#include "Settings.hpp"
+
+namespace lightpack
 {
-    Q_OBJECT
+namespace speedtests
+{
+    class SpeedTest
+    {
+    public:
+        static void run();
 
-public:
-    SpeedTest();
+        static void printHeader();
+        static void startTests();
+        static void testFullScreenGrabSpeed();
+        static void testDefaultLedWidgetsGrabSpeed();
 
-    void start();
+        static void printGrabPrecision(int column);
+        static void printVersionOS(int column);
+        static void printDwmIsEnabled(int column);
+        static void printDateTime(int column);
+        static void printSwVersion(int column);
 
-private:
-    void printHeader();
-    void startTests();
-    void testFullScreenGrabSpeed();
-    void testDefaultLedWidgetsGrabSpeed();
+        static QString getFileName();
 
-private:
-    QFile resultFile;
-    QTextStream resultStream;
+        static void initColumns();
+        static void outColumn(int index, QVariant text);
 
-    QTime time;
+        static const int TestTimes = 5;
+        static const int LedsCount = 8;
+        static const int GrabWidgetWidth  = 150;
+        static const int GrabWidgetHeight = 150;
 
-    static const int TestTimes;
-    static const int LedsCount;
-    static const int LedWidth;
-    static const int LedHeight;
-};
+    private:
+        static const QString fileName;
+        static QList<QString> columns;
+        static QTextStream outStream;
+    };
+}
+}
