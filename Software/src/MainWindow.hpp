@@ -86,7 +86,11 @@ private slots:
     void loadTranslation(const QString & language);
 
     void switchQtWinAPIClick();
-    void startTestsClick();
+
+    void startSpeedTestsClick();
+    void speedTestsFinished();
+    void openSpeedTestCsv();
+
     void updateGrabbedColors(const QList<StructRGB> & colors);
 
 private:
@@ -116,7 +120,6 @@ private:
     AmbilightUsb *ambilightUsb;
     GrabManager *grabManager;
     AboutDialog *aboutDialog;
-    SpeedTest *speedTest;
 
     bool isAmbilightOn; /* is grab desktop window ON */
     bool isErrorState;
@@ -140,4 +143,6 @@ private:
     QMenu *profilesMenu;
 
     QTranslator *translator;
+
+    QFutureWatcher<void> speedTestFutureWatcher;
 };

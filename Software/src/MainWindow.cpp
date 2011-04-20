@@ -33,6 +33,8 @@
 
 #include "debug.hpp"
 
+using namespace lightpack::speedtests;
+
 // ----------------------------------------------------------------------------
 // Lightpack settings window
 // ----------------------------------------------------------------------------
@@ -69,8 +71,6 @@ MainWindow::MainWindow(QWidget *parent) :
     grabManager = new GrabManager();
 
     aboutDialog = new AboutDialog(this);
-
-    ////speedTest = new SpeedTest();
 
     profilesFindAll();
 
@@ -163,9 +163,11 @@ void MainWindow::connectSignalsSlots()
         connect(ui->radioButton_GrabQt, SIGNAL(toggled(bool)), this, SLOT(switchQtWinAPIClick()));
         connect(ui->radioButton_GrabWinAPI, SIGNAL(toggled(bool)), this, SLOT(switchQtWinAPIClick()));
 
-        connect(ui->pushButton_StartTests, SIGNAL(clicked()), this, SLOT(startTestsClick()));
-
         connect(grabManager, SIGNAL(updateLedsColors(QList<StructRGB>)), this, SLOT(updateGrabbedColors(QList<StructRGB>)));
+
+        connect(ui->pushButton_StartTests, SIGNAL(clicked()), this, SLOT(startSpeedTestsClick()));
+        connect(&speedTestFutureWatcher, SIGNAL(finished()), this, SLOT(speedTestsFinished()));
+        connect(ui->pushButton_OpenSpeedTestCsv, SIGNAL(clicked()), this, SLOT(openSpeedTestCsv()));
     }
 }
 
@@ -792,16 +794,26 @@ void MainWindow::grabSwitchQtWinAPI()
 // Start grab speed tests
 // ----------------------------------------------------------------------------
 
-void MainWindow::startTestsClick()
+void MainWindow::startSpeedTestsClick()
 {
-    QString saveText = ui->pushButton_StartTests->text();
     ui->pushButton_StartTests->setText( "Please wait..." );
+    ui->pushButton_StartTests->setEnabled(false);
     ui->pushButton_StartTests->repaint(); // update right now
 
-    // While testing this function freezes GUI
-   // speedTest->start();
+    QFuture<void> future = QtConcurrent::run(SpeedTest::run);
 
-    ui->pushButton_StartTests->setText( saveText );
+    speedTestFutureWatcher.setFuture(future);
+}
+
+void MainWindow::speedTestsFinished()
+{
+    ui->pushButton_StartTests->setText( "Start tests" );
+    ui->pushButton_StartTests->setEnabled(true);
+}
+
+void MainWindow::openSpeedTestCsv()
+{
+    openFile(Settings::getApplicationDirPath() + "/" + SpeedTest::getFileName());
 }
 
 // ----------------------------------------------------------------------------
