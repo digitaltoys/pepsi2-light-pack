@@ -84,7 +84,7 @@ win32 {
     LIBS    += -lgdi32
 
     LIBS    += -ld3d9
-    INCLUDEPATH += "C:\Program Files\Microsoft DirectX SDK (June 2010)\Include"
+    INCLUDEPATH += "C:/Program Files/Microsoft DirectX SDK (June 2010)/Include"
 }
 
 unix:!macx{

@@ -122,8 +122,8 @@ namespace capture
         RECT rect;
         rect.left = m_rect.left;
         rect.top = m_rect.top;
-        rect.right = m_rect.left + m_rect.width;
-        rect.bottom = m_rect.top + m_rect.height;
+        rect.right = m_rect.left + m_rect.width - 1;
+        rect.bottom = m_rect.top + m_rect.height - 1;
 
         D3DLOCKED_RECT blockedRect;
 

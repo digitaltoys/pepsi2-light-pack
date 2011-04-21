@@ -796,6 +796,8 @@ void MainWindow::grabSwitchQtWinAPI()
 
 void MainWindow::startSpeedTestsClick()
 {
+    ambilightOff();
+
     ui->pushButton_StartTests->setText( "Please wait..." );
     ui->pushButton_StartTests->setEnabled(false);
     ui->pushButton_StartTests->repaint(); // update right now
@@ -809,6 +811,8 @@ void MainWindow::speedTestsFinished()
 {
     ui->pushButton_StartTests->setText( "Start tests" );
     ui->pushButton_StartTests->setEnabled(true);
+
+    ambilightOn();
 }
 
 void MainWindow::openSpeedTestCsv()

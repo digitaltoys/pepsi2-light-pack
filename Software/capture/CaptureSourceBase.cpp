@@ -246,7 +246,7 @@ namespace capture
         if (!hasListener(callback))
         {
             qWarning()
-                << "Listener have no for rect:"
+                << "Listener with same callback already subscribed, rect:"
                 << rect.left << rect.top << rect.width << rect.height;
             return;
         }
@@ -267,7 +267,7 @@ namespace capture
     {
         if (!hasListener(callback))
         {
-            qWarning() << "Listener have no subscribers";
+            qWarning() << "Listener have no subscriber";
             return;
         }
 
