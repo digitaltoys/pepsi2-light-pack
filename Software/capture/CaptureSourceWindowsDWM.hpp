@@ -16,7 +16,8 @@ namespace capture
     class CaptureSourceWindowsDWM : CaptureSourceBase
     {
     private:
-        QWidget m_widget;
+        //Fatal: ASSERT failure in QWidget: "Widgets must be created in the GUI thread.", file kernel\qwidget.cpp, line 1231
+        //QWidget m_widget;
     public:
         CaptureSourceWindowsDWM();
 

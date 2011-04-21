@@ -38,6 +38,7 @@ using namespace std;
 #include "CaptureSourceQtGrabWindow.hpp"
 #include "CaptureSourceWindowsWinApi.hpp"
 #include "CaptureSourceWindowsDirect3D9.hpp"
+#include "CaptureSourceWindowsDWM.hpp"
 
 using namespace lightpack::capture;
 using namespace lightpack::capture::math;
@@ -161,8 +162,11 @@ namespace speedtests
         QList <ICaptureSource *> captureSources;
 
         captureSources << (ICaptureSource *)(new CaptureSourceQtGrabWindow());
+#       ifdef Q_WS_WIN
         captureSources << (ICaptureSource *)(new CaptureSourceWindowsWinApi());
         captureSources << (ICaptureSource *)(new CaptureSourceWindowsDirect3D9());
+        captureSources << (ICaptureSource *)(new CaptureSourceWindowsDWM());
+#       endif
 
         for (int captureIndex = 0; captureIndex < captureSources.count(); captureIndex++)
         {
@@ -176,6 +180,7 @@ namespace speedtests
             case 0: outColumn(column++, "Qt"); break;
             case 1: outColumn(column++, "WinAPI"); break;
             case 2: outColumn(column++, "Direct3D9"); break;
+            case 3: outColumn(column++, "DWM"); break;
             }
 
             // -----------------------------------------------------------------
