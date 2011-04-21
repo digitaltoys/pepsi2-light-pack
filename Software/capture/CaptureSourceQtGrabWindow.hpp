@@ -34,6 +34,9 @@ namespace capture
 {
     class CaptureSourceQtGrabWindow : CaptureSourceBase
     {
+    public:
+        CaptureSourceQtGrabWindow();
+
     // CaptureSourceBase
     protected:
         virtual void fillData();

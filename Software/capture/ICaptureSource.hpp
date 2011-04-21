@@ -26,6 +26,8 @@
 
 #pragma once
 
+#include <QString>
+
 #include "capture.hpp"
 #include "ICaptureListenerCallback.hpp"
 
@@ -36,13 +38,15 @@ namespace capture
 class ICaptureSource
     {
     public:
-        virtual void capture() = 0;
+        virtual void capture() = 0;       
 
         virtual void subscribeListener(ICaptureListenerCallback *callback, const CaptureRect &rect) = 0;
         virtual bool hasListener(ICaptureListenerCallback *callback) const = 0;
         virtual void updateListener(ICaptureListenerCallback *callback, const CaptureRect &rect) = 0;
         virtual void unsubscribeListener(ICaptureListenerCallback *callback) = 0;
         virtual void unsubscribeAllListeners() = 0;
+
+        virtual const QString & name() = 0;
     };
 }
 }

@@ -34,6 +34,12 @@ namespace lightpack
 {
 namespace capture
 {
+    CaptureSourceWindowsWinApi::CaptureSourceWindowsWinApi()
+        : CaptureSourceBase()
+    {
+        m_selfName = "WinAPI";
+    }
+
     // CaptureSourceBase
 
     void CaptureSourceWindowsWinApi::fillData()

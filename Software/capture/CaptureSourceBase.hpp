@@ -78,6 +78,7 @@ namespace capture
         int m_bitsCount;
         int m_dataLength;
         uint8_t *m_data;
+        QString m_selfName;
 
         CaptureSourceBase();
 
@@ -95,6 +96,7 @@ namespace capture
     public:
         ~CaptureSourceBase();
 
+
     // ICaptureSource
     public:
         virtual void capture();
@@ -104,6 +106,11 @@ namespace capture
         virtual void updateListener(ICaptureListenerCallback *callback, const CaptureRect &rect);
         virtual void unsubscribeListener(ICaptureListenerCallback *callback);
         virtual void unsubscribeAllListeners();
+
+        virtual const QString & name()
+        {
+            return m_selfName;
+        }
     };
 }
 }
