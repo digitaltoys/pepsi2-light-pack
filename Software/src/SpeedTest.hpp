@@ -75,7 +75,8 @@ namespace speedtests
         static const int GrabWidgetHeight = 150;
 
     private:
-        static const QString m_fileName;
+        static const QString FileName;
+        static const QString CsvSeparator;
         static QList<QString> m_columns;
         static QTextStream m_outStream;
 

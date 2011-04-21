@@ -1,5 +1,5 @@
 /*
- * speedtest.cpp
+ * SpeedTest.cpp
  *
  *  Created on: 4.04.2011
  *      Author: Mike Shatohin (brunql)
@@ -27,9 +27,6 @@
 #include <QApplication>
 #include <QDesktopWidget>
 
-#include <iostream>
-using namespace std;
-
 #include "SpeedTest.hpp"
 #include "Settings.hpp"
 #include "version.hpp"
@@ -43,18 +40,12 @@ using namespace std;
 using namespace lightpack::capture;
 using namespace lightpack::capture::math;
 
-#ifdef Q_WS_WIN
-#   include <windows.h>
-#endif /* Q_WS_WIN */
-
-
-const QString CsvSeparator = ", ";
-
 namespace lightpack
 {
 namespace speedtests
 {   
-    const QString SpeedTest::m_fileName = "SpeedTest.csv";
+    const QString   SpeedTest::FileName = "SpeedTest.csv";
+    const QString   SpeedTest::CsvSeparator = ", ";
 
     QList<QString>  SpeedTest::m_columns;
     QTextStream     SpeedTest::m_outStream;
@@ -65,15 +56,15 @@ namespace speedtests
     {
         DEBUG_LOW_LEVEL << Q_FUNC_INFO;
 
-        QString filePath = Settings::getApplicationDirPath() + "/" + m_fileName;
+        QString filePath = Settings::getApplicationDirPath() + "/" + FileName;
         QFile resultFile(filePath);
 
         m_isDwmEnabled = checkDwmEnabled();
 
-        bool IsFileExists = false;
+        bool isFileExists = false;
 
         if (resultFile.exists())
-            IsFileExists = true;
+            isFileExists = true;
 
         if (resultFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
         {
@@ -81,7 +72,7 @@ namespace speedtests
 
             initColumns();
 
-            if (IsFileExists == false)
+            if (isFileExists == false)
                 printHeader();
 
             startTests();
@@ -96,7 +87,7 @@ namespace speedtests
 
     QString SpeedTest::getFileName()
     {
-        return m_fileName;
+        return FileName;
     }
 
     void SpeedTest::initColumns()
