@@ -56,14 +56,14 @@ namespace math
         unsigned g = 0;
         unsigned b = 0;
 
-        int grabPrecision = round( sqrt( 100.0 / (double)grabPercent ) );
+        int grabPrecisionY = grabPercent;
 
-        if (grabPrecision <= 0)
-            grabPrecision = 1;
+        if (grabPrecisionY <= 0)
+            grabPrecisionY = 1;
 
-        for (int y = 0; y < buffer.height; y += grabPrecision)
+        for (int y = 0; y < buffer.height; y += grabPrecisionY)
         {
-            for (int x = 0; x < buffer.width; x += grabPrecision)
+            for (int x = 0; x < buffer.width; x++)
             {
                 index = (y * buffer.width + x) * bytesCount;
 

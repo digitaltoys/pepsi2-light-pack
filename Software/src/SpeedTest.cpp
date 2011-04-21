@@ -98,10 +98,10 @@ namespace speedtests
         //                2011.04.20 02:44:29
 
         m_columns.append("CaptureSource");
-        m_columns.append("1-Widget     ");
-        m_columns.append("4-LeftWidgets");
-        m_columns.append("8-Widgets    ");
-        m_columns.append("1-FullScreen ");
+        m_columns.append("1-Widget       ");
+        m_columns.append("4-LeftWidgets  ");
+        m_columns.append("8-Widgets      ");
+        m_columns.append("1-FullScreen   ");
         m_columns.append("TestTimes");
         m_columns.append("GrabPrecision");
 
@@ -269,8 +269,8 @@ namespace speedtests
 
         // Format output string
         QString captureTime = QString("%1 (%2)")
-                              .arg(testTimeMathEnabled, 5, 'f', 2)
-                              .arg(testTimeMathDisabled, 5, 'f', 2);
+                              .arg(testTimeMathEnabled, 6, 'f', 2)
+                              .arg(testTimeMathDisabled, 6, 'f', 2);
 
         outColumn(column, captureTime);
     }
