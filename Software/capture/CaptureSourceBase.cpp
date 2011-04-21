@@ -38,8 +38,8 @@ namespace lightpack
 namespace capture
 {
     CaptureSourceBase::CaptureSourceBase()
-        : m_bitsCount(0), m_dataLength(0), m_data(NULL)
-    {
+        : m_bitsCount(0), m_dataLength(0), m_data(NULL), m_selfName("Base")
+    {        
     }
 
     void CaptureSourceBase::recalculateRect()

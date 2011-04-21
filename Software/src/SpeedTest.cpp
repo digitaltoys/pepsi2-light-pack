@@ -174,14 +174,7 @@ namespace speedtests
 
             printDateTime(column++);
 
-            // TODO: add names to CaptureSourceBase class
-            switch (captureIndex)
-            {
-            case 0: outColumn(column++, "Qt"); break;
-            case 1: outColumn(column++, "WinAPI"); break;
-            case 2: outColumn(column++, "Direct3D9"); break;
-            case 3: outColumn(column++, "DWM"); break;
-            }
+            outColumn(column++, captureSources[captureIndex]->name());
 
             // -----------------------------------------------------------------
             // Test capture speed on one widget

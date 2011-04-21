@@ -7,7 +7,9 @@ namespace lightpack
 namespace capture
 {
     CaptureSourceWindowsDWM::CaptureSourceWindowsDWM()
+        : CaptureSourceBase()
     {
+        m_selfName = "DWM";
     }
 
     // CaptureSourceBase

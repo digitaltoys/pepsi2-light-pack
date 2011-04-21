@@ -33,6 +33,12 @@ namespace lightpack
 {
 namespace capture
 {
+    CaptureSourceQtGrabWindow::CaptureSourceQtGrabWindow()
+        : CaptureSourceBase()
+    {
+        m_selfName = "Qt";
+    }
+
     void CaptureSourceQtGrabWindow::fillData()
     {
         m_bitsCount = 32; // todo

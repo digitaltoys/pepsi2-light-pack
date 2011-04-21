@@ -38,6 +38,9 @@ namespace capture
 {
     class CaptureSourceWindowsWinApi : CaptureSourceBase
     {
+    public:
+        CaptureSourceWindowsWinApi();
+
     // CaptureSourceBase
     protected:
         virtual void fillData();
