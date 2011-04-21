@@ -52,49 +52,18 @@ const QString CsvSeparator = ", ";
 namespace lightpack
 {
 namespace speedtests
-{
+{   
+    const QString SpeedTest::m_fileName = "SpeedTest.csv";
 
-
-    class GrabWidgetMini : public ICaptureListenerCallback
-    {
-    public:
-        bool isListenerCallbackEnabled()
-        {
-            return true;
-        }
-
-        void listenerBufferCallback(const CaptureBuffer &buffer)
-        {
-            qDebug() << "listenerBufferCallback";
-        }
-
-        QRect rect;
-
-        CaptureRect getWidgetRect()
-        {
-            CaptureRect result;
-
-            result.left = rect.x();
-            result.top = rect.x();
-            result.width = rect.width();
-            result.height = rect.height();
-
-            return result;
-        }
-    };
-
-
-
-    const QString SpeedTest::fileName = "SpeedTest.csv";
-
-    QList<QString> SpeedTest::columns;
-    QTextStream SpeedTest::outStream;
+    QList<QString> SpeedTest::m_columns;
+    QTextStream SpeedTest::m_outStream;
+    QTime SpeedTest::m_timer;
 
     void SpeedTest::run()
     {
         DEBUG_LOW_LEVEL << Q_FUNC_INFO;
 
-        QString filePath = Settings::getApplicationDirPath() + "/" + fileName;
+        QString filePath = Settings::getApplicationDirPath() + "/" + m_fileName;
         QFile resultFile(filePath);
 
         bool IsFileExists = false;
@@ -104,7 +73,7 @@ namespace speedtests
 
         if (resultFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
         {
-            outStream.setDevice(&resultFile);
+            m_outStream.setDevice(&resultFile);
 
             initColumns();
 
@@ -113,7 +82,7 @@ namespace speedtests
 
             startTests();
 
-            outStream.flush();
+            m_outStream.flush();
 
         } else {
             qWarning() << Q_FUNC_INFO << "Can't open file:" << filePath;
@@ -123,40 +92,41 @@ namespace speedtests
 
     void SpeedTest::initColumns()
     {
-        columns.clear();
+        m_columns.clear();
 
-        columns.append("Date & time        ");
-        //              2011.04.20 02:44:29
+        m_columns.append("Date & time        ");
+        //                2011.04.20 02:44:29
 
-        columns.append("CaptureSource");
-        columns.append("1-Widget");
-        columns.append("4-LeftWidgets");
-        columns.append("8-FullScreen");
-        columns.append("1-FullScreen");
-        columns.append("Precision");
+        m_columns.append("CaptureSource");
+        m_columns.append("1-Widget     ");
+        m_columns.append("4-LeftWidgets");
+        m_columns.append("8-Widgets    ");
+        m_columns.append("1-FullScreen ");
+        m_columns.append("TestTimes");
+        m_columns.append("GrabPrecision");
 
-        columns.append("Aero    ");
-        //              Disabled
+        m_columns.append("Aero    ");
+        //                Disabled
 
-        columns.append("Software  ");
-        columns.append("OS");
+        m_columns.append("Software  ");
+        m_columns.append("OS");
     }
 
     void SpeedTest::outColumn(int index, QVariant text)
     {
         QString res = text.toString();
 
-        res.prepend(QString(columns[index].length() - res.length(), ' '));
+        res.append(QString(m_columns[index].length() - res.length(), ' '));
 
-        outStream << res << CsvSeparator;
+        m_outStream << res << CsvSeparator;
     }
 
     void SpeedTest::printHeader()
     {
-        for (int i = 0; i < columns.count(); i++)
-            outStream << columns.at(i) << CsvSeparator;
+        for (int i = 0; i < m_columns.count(); i++)
+            m_outStream << m_columns.at(i) << CsvSeparator;
 
-        outStream << endl;
+        m_outStream << endl;
     }
 
     void SpeedTest::startTests()
@@ -167,92 +137,142 @@ namespace speedtests
         DEBUG_LOW_LEVEL << Q_FUNC_INFO << "Screen Rect:" << screenRect;
 
 
-        QList<GrabWidgetMini *> grabWidgetsMini;
+        QList<CaptureListener *> captureListeners;
 
         for (int i = 0; i < LedsCount; i++)
         {
-            GrabWidgetMini * grabMe = new GrabWidgetMini;
+            CaptureListener * grabMe = new CaptureListener;
 
-            grabMe->rect.setTopLeft( Settings::getDefaultPosition(i) );
-            grabMe->rect.setWidth(GrabWidgetWidth);
-            grabMe->rect.setHeight(GrabWidgetHeight);
+            grabMe->setRect(QRect(
+                    Settings::getDefaultPosition(i),
+                    QSize(GrabWidgetWidth, GrabWidgetHeight)));
 
-            grabWidgetsMini << grabMe;
+            captureListeners << grabMe;
         }
 
         QList <ICaptureSource *> captureSources;
 
         captureSources << (ICaptureSource *)(new CaptureSourceQtGrabWindow());
         captureSources << (ICaptureSource *)(new CaptureSourceWindowsWinApi());
+        captureSources << (ICaptureSource *)(new CaptureSourceWindowsDirect3D9());
 
-        QTime time;
-
-        for (int c = 0; c < captureSources.count(); c++)
+        for (int captureIndex = 0; captureIndex < captureSources.count(); captureIndex++)
         {
             int column = 0;
 
             printDateTime(column++);
 
             // TODO: add names to CaptureSourceBase class
-            switch (c)
+            switch (captureIndex)
             {
             case 0: outColumn(column++, "Qt"); break;
             case 1: outColumn(column++, "WinAPI"); break;
+            case 2: outColumn(column++, "Direct3D9"); break;
             }
 
             // -----------------------------------------------------------------
             // Test capture speed on one widget
             // 1-Widget
-            captureSources[c]->subscribeListener(grabWidgetsMini[0],
-                                                 grabWidgetsMini[0]->getWidgetRect());
 
-            time.start();
+            // Subscribe 1 left widget
+            captureSources[captureIndex]->subscribeListener(
+                    captureListeners[0],
+                    captureListeners[0]->getWidgetRect());
 
-            for (int times = 0; times < TestTimes; times++)
-                captureSources[c]->capture();
-
-            outColumn(column++, time.elapsed());
+            captureTime(captureSources[captureIndex], captureListeners, column++);
 
             // -----------------------------------------------------------------
             // 4-LeftWidgets
-            outColumn(column++, 0);
+
+            // Subscribe last half left widgets
+            for (int i = 1; i < LedsCount / 2; i++)
+            {
+                captureSources[captureIndex]->subscribeListener(
+                        captureListeners[i],
+                        captureListeners[i]->getWidgetRect());
+            }
+
+            captureTime(captureSources[captureIndex], captureListeners, column++);
 
 
             // -----------------------------------------------------------------
-            // Test capture speed on two corner widgets
-            // 8-FullScreen
-            captureSources[c]->subscribeListener(grabWidgetsMini[LedsCount - 1],
-                                                 grabWidgetsMini[LedsCount - 1]->getWidgetRect());
+            // 8-Widgets
 
-            time.start();
+            // Subscribe 4 right widgets
+            for (int i = LedsCount / 2; i < LedsCount; i++)
+            {
+                captureSources[captureIndex]->subscribeListener(
+                        captureListeners[i],
+                        captureListeners[i]->getWidgetRect());
+            }
 
-            for (int times = 0; times < TestTimes; times++)
-                captureSources[c]->capture();
-
-            outColumn(column++, time.elapsed());
-
+            captureTime(captureSources[captureIndex], captureListeners, column++);
 
             // -----------------------------------------------------------------
             // 1-FullScreen
-            outColumn(column++, 0);
 
+            captureSources[captureIndex]->unsubscribeAllListeners();
+
+            captureListeners[0]->setRect(QApplication::desktop()->screenGeometry());
+
+            captureSources[captureIndex]->subscribeListener(
+                    captureListeners[0],
+                    captureListeners[0]->getWidgetRect());
+
+
+            captureTime(captureSources[captureIndex], captureListeners, column++);
+
+            outColumn(column++, TestTimes);
             printGrabPrecision(column++);
             printDwmIsEnabled(column++);
             printSwVersion(column++);
             printVersionOS(column++);
 
-            outStream << endl;
+            m_outStream << endl;
         }
 
         // Split tests run
-        outStream << endl;
+        m_outStream << endl;
+
+        m_outStream.flush();
 
 
         for (int i = 0; i < captureSources.count(); i++)
             delete captureSources[i];
 
-        for (int i = 0; i < grabWidgetsMini.count(); i++)
-            delete grabWidgetsMini[i];
+        for (int i = 0; i < captureListeners.count(); i++)
+            delete captureListeners[i];
+    }
+
+    void SpeedTest::captureTime(ICaptureSource * captureSource,
+                            const QList<CaptureListener*> & listeners,
+                            int column)
+    {
+        // Eval time with math enabled
+        for (int i = 0; i < listeners.count(); i++)
+            listeners[i]->setMathEnabled(true);
+
+        m_timer.start();
+        for (int i = 0; i < TestTimes; i++)
+            captureSource->capture();
+        double testTimeMathEnabled = (double)m_timer.elapsed() / TestTimes;
+
+
+        // Eval time with math disabled
+        for (int i = 0; i < listeners.count(); i++)
+            listeners[i]->setMathEnabled(false);
+
+        m_timer.start();
+        for (int i = 0; i < TestTimes; i++)
+            captureSource->capture();
+        double testTimeMathDisabled = (double)m_timer.elapsed() / TestTimes;
+
+        // Format output string
+        QString captureTime = QString("%1 (%2)")
+                              .arg(testTimeMathEnabled, 5, 'f', 2)
+                              .arg(testTimeMathDisabled, 5, 'f', 2);
+
+        outColumn(column, captureTime);
     }
 
 
@@ -291,9 +311,8 @@ namespace speedtests
     {
 #       ifdef Q_WS_WIN
 
-        //
         // Aero enabled? Eval WinAPI function DwmIsCompositionEnabled for check it.
-        //
+
         DEBUG_LOW_LEVEL << "Load library dwmapi.dll to test enabled Aero";
 
 
@@ -348,7 +367,7 @@ namespace speedtests
 
     QString SpeedTest::getFileName()
     {
-        return fileName;
+        return m_fileName;
     }
 
 }

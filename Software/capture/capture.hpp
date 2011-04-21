@@ -61,17 +61,17 @@ namespace capture
 
         int getRight()
         {
-            return (left + width);
+            return (left + width - 1);
         }
 
         int getBottom()
         {
-            return (top + height);
+            return (top + height - 1);
         }
 
         void setRight(int value)
         {
-            int newWidth = value - left;
+            int newWidth = value - left + 1;
 
             width = (newWidth > 0)
                 ? newWidth
@@ -79,7 +79,7 @@ namespace capture
         }
 
         void setBottom(int value) {
-            int newHeight = value - top;
+            int newHeight = value - top + 1;
 
             height = (newHeight > 0)
                 ? newHeight

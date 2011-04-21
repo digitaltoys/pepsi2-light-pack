@@ -32,20 +32,32 @@
 #include <QTime>
 
 #include "Settings.hpp"
+#include "ICaptureSource.hpp"
+
+#include "capturemath.hpp"
+
+using namespace lightpack::capture;
+using namespace lightpack::capture::math;
 
 namespace lightpack
-{
+{   
 namespace speedtests
 {
+    class CaptureListener;
+
     class SpeedTest
     {
     public:
         static void run();
 
+        static void initColumns();
+        static void outColumn(int index, QVariant text);
+
         static void printHeader();
         static void startTests();
-        static void testFullScreenGrabSpeed();
-        static void testDefaultLedWidgetsGrabSpeed();
+        static void captureTime(ICaptureSource * captureSource,
+                                const QList<CaptureListener*> & listeners,
+                                int column);
 
         static void printGrabPrecision(int column);
         static void printVersionOS(int column);
@@ -55,18 +67,64 @@ namespace speedtests
 
         static QString getFileName();
 
-        static void initColumns();
-        static void outColumn(int index, QVariant text);
-
-        static const int TestTimes = 5;
+        static const int TestTimes = 20;
         static const int LedsCount = 8;
         static const int GrabWidgetWidth  = 150;
         static const int GrabWidgetHeight = 150;
 
     private:
-        static const QString fileName;
-        static QList<QString> columns;
-        static QTextStream outStream;
+        static const QString m_fileName;
+        static QList<QString> m_columns;
+        static QTextStream m_outStream;
+
+        static QTime m_timer;
+    };
+
+    class CaptureListener : public ICaptureListenerCallback
+    {
+    public:
+        CaptureListener()
+        {
+            m_grabPrecision = Settings::value("GrabPercent").toInt();
+        }
+
+        bool isListenerCallbackEnabled()
+        {
+            return true;
+        }
+
+        void listenerBufferCallback(const CaptureBuffer & buffer)
+        {
+            if (m_isMathEnabled)
+                getAvgColor(buffer, m_grabPrecision);
+        }
+
+        CaptureRect getWidgetRect()
+        {
+            CaptureRect result;
+
+            result.left = m_rect.x();
+            result.top = m_rect.y();
+            result.width = m_rect.width();
+            result.height = m_rect.height();
+
+            return result;
+        }
+
+        void setRect(const QRect & r)
+        {
+            m_rect = r;
+        }
+
+        void setMathEnabled(bool state)
+        {
+            m_isMathEnabled = state;
+        }
+
+    private:
+        QRect m_rect;
+        bool m_isMathEnabled;
+        int m_grabPrecision;
     };
 }
 }
