@@ -55,9 +55,10 @@ namespace speedtests
 {   
     const QString SpeedTest::m_fileName = "SpeedTest.csv";
 
-    QList<QString> SpeedTest::m_columns;
-    QTextStream SpeedTest::m_outStream;
-    QTime SpeedTest::m_timer;
+    QList<QString>  SpeedTest::m_columns;
+    QTextStream     SpeedTest::m_outStream;
+    QTime           SpeedTest::m_timer;
+    QString         SpeedTest::m_isDwmEnabled;
 
     void SpeedTest::run()
     {
@@ -65,6 +66,8 @@ namespace speedtests
 
         QString filePath = Settings::getApplicationDirPath() + "/" + m_fileName;
         QFile resultFile(filePath);
+
+        m_isDwmEnabled = checkDwmEnabled();
 
         bool IsFileExists = false;
 
@@ -88,6 +91,11 @@ namespace speedtests
             qWarning() << Q_FUNC_INFO << "Can't open file:" << filePath;
         }
 
+    }
+
+    QString SpeedTest::getFileName()
+    {
+        return m_fileName;
     }
 
     void SpeedTest::initColumns()
@@ -309,6 +317,24 @@ namespace speedtests
 
     void SpeedTest::printDwmIsEnabled(int column)
     {
+        outColumn(column, m_isDwmEnabled);
+    }
+
+
+    void SpeedTest::printDateTime(int column)
+    {
+        outColumn(column,
+                  QDateTime::currentDateTime().date().toString("yyyy.MM.dd") + " " +
+                  QDateTime::currentDateTime().time().toString("hh:mm:ss"));
+    }
+
+    void SpeedTest::printSwVersion(int column)
+    {
+        outColumn(column, "sw" VERSION_STR);
+    }
+
+    QString SpeedTest::checkDwmEnabled()
+    {
 #       ifdef Q_WS_WIN
 
         // Aero enabled? Eval WinAPI function DwmIsCompositionEnabled for check it.
@@ -325,7 +351,7 @@ namespace speedtests
         if (hDll == NULL)
         {
             qWarning() << "Error loading win32 dll: dwmapi.dll";
-            outColumn(column, "Unknown");
+            return "Unknown";
         } else {
 
             dwmIsCompositionEnabled = (DWM_IS_COMPOSITION_ENABLED) GetProcAddress(hDll,"DwmIsCompositionEnabled");
@@ -337,9 +363,9 @@ namespace speedtests
                 dwmIsCompositionEnabled(&result);
 
                 if (result)
-                    outColumn(column, "Enabled");
+                    return "Enabled";
                 else
-                    outColumn(column, "Disabled");
+                    return "Disabled";
 
             } else {
                 qWarning() << "Error:" << GetLastError();
@@ -347,27 +373,9 @@ namespace speedtests
         }
 #       else
 
-        outColumn(column, "undef");
+        return "Nope";
 
 #       endif /* Q_WS_WIN */
-    }
-
-
-    void SpeedTest::printDateTime(int column)
-    {
-        outColumn(column,
-                  QDateTime::currentDateTime().date().toString("yyyy.MM.dd") + " " +
-                  QDateTime::currentDateTime().time().toString("hh:mm:ss"));
-    }
-
-    void SpeedTest::printSwVersion(int column)
-    {
-        outColumn(column, "sw" VERSION_STR);
-    }
-
-    QString SpeedTest::getFileName()
-    {
-        return m_fileName;
     }
 
 }

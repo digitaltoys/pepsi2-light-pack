@@ -49,7 +49,9 @@ namespace speedtests
     {
     public:
         static void run();
+        static QString getFileName();
 
+    private:
         static void initColumns();
         static void outColumn(int index, QVariant text);
 
@@ -65,7 +67,7 @@ namespace speedtests
         static void printDateTime(int column);
         static void printSwVersion(int column);
 
-        static QString getFileName();
+        static QString checkDwmEnabled();
 
         static const int TestTimes = 20;
         static const int LedsCount = 8;
@@ -78,6 +80,7 @@ namespace speedtests
         static QTextStream m_outStream;
 
         static QTime m_timer;
+        static QString m_isDwmEnabled;
     };
 
     class CaptureListener : public ICaptureListenerCallback
