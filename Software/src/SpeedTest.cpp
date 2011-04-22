@@ -275,7 +275,7 @@ namespace speedtests
 
     void SpeedTest::printGrabPrecision(int column)
     {
-        outColumn(column, Settings::value("GrabPercent"));
+        outColumn(column, Settings::value("GrabPrecision"));
     }
 
     void SpeedTest::printVersionOS(int column)

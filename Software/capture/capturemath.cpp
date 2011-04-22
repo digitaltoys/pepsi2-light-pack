@@ -46,12 +46,12 @@ namespace math
         return (x == 0) ? 1 : x;
     }
 
-    QRgb getAvgColor(const CaptureBuffer & buffer, const int & grabPercent)
+    QRgb getAvgColor(const CaptureBuffer & buffer, const int & grabPrecision)
     {
         if (buffer.dataLength < 4)
             return 0;
         else if (buffer.dataLength == 4)
-            return qRgb(buffer.data[2], buffer.data[1], buffer.data[0]);
+            return qRgb(buffer.data[2], buffer.data[1], buffer.data[0]);              
 
         int pixelsCount = 0;
         int bytesPerPixel = buffer.bitsCount / 8;
@@ -70,7 +70,7 @@ namespace math
             //a= buffer.data[index + 3] + buffer.data[index + 7] + buffer.data[index + 11] + buffer.data[index + 15];
 
             pixelsCount += 4;
-            index += bytesPerPixel * 4;
+            index += bytesPerPixel * 4 * grabPrecision;
         }
 
         if (pixelsCount != 0)
