@@ -423,11 +423,11 @@ void GrabManager::setMinLevelOfSensivity(int value)
 }
 
 
-void GrabManager::setGrabPercent(int value)
+void GrabManager::setGrabPrecision(int value)
 {
     for (int i = 0; i < m_grabWidgets.count(); i++)
     {
-        m_grabWidgets[i]->setGrabPercent(value);
+        m_grabWidgets[i]->setGrabPrecision(value);
     }
-    Settings::setValue("GrabPercent", value);
+    Settings::setValue("GrabPrecision", value);
 }
