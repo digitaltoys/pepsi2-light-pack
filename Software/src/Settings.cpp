@@ -68,12 +68,12 @@ void Settings::Initialize( const QString & applicationDirPath, bool isSetDebugLe
         int sDebugLevel = Settings::valueMain("DebugLevel").toInt(&ok);
 
         if( ok && sDebugLevel >= 0 ){
-            debugLevel = sDebugLevel;
-            DEBUG_LOW_LEVEL << Q_FUNC_INFO << "debugLevel =" << debugLevel;
+            g_debugLevel = sDebugLevel;
+            DEBUG_LOW_LEVEL << Q_FUNC_INFO << "debugLevel =" << g_debugLevel;
         }else{
             qWarning() << "DebugLevel in config has an invalid value, set the default" << DEBUG_LEVEL_DEFAULT;
             Settings::setValueMain("DebugLevel", DEBUG_LEVEL_DEFAULT);
-            debugLevel = DEBUG_LEVEL_DEFAULT;
+            g_debugLevel = DEBUG_LEVEL_DEFAULT;
         }
     }
 
