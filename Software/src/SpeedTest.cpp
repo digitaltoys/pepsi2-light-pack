@@ -98,12 +98,13 @@ namespace speedtests
         //                2011.04.20 02:44:29
 
         m_columns.append("CaptureSource");
-        m_columns.append("1-Widget       ");
-        m_columns.append("4-LeftWidgets  ");
-        m_columns.append("8-Widgets      ");
-        m_columns.append("1-FullScreen   ");
-        m_columns.append("TestTimes");
+        m_columns.append("1-Widget     ");
+        m_columns.append("4-LeftWidgets");
+        m_columns.append("8-Widgets    ");
+        m_columns.append("1-FullScreen ");
+        m_columns.append("getAvgColor()");
         m_columns.append("GrabPrecision");
+        m_columns.append("TestTimes");
 
         m_columns.append("Aero    ");
         //                Disabled
@@ -176,7 +177,7 @@ namespace speedtests
                     captureListeners[0],
                     captureListeners[0]->getWidgetRect());
 
-            captureTime(captureSources[captureIndex], captureListeners, column++);
+            printCaptureTime(captureSources[captureIndex], column++);
 
             // -----------------------------------------------------------------
             // 4-LeftWidgets
@@ -189,7 +190,7 @@ namespace speedtests
                         captureListeners[i]->getWidgetRect());
             }
 
-            captureTime(captureSources[captureIndex], captureListeners, column++);
+            printCaptureTime(captureSources[captureIndex], column++);
 
 
             // -----------------------------------------------------------------
@@ -203,7 +204,7 @@ namespace speedtests
                         captureListeners[i]->getWidgetRect());
             }
 
-            captureTime(captureSources[captureIndex], captureListeners, column++);
+            printCaptureTime(captureSources[captureIndex], column++);
 
             // -----------------------------------------------------------------
             // 1-FullScreen
@@ -217,11 +218,17 @@ namespace speedtests
                     captureListeners[0]->getWidgetRect());
 
 
-            captureTime(captureSources[captureIndex], captureListeners, column++);
+            printCaptureTime(captureSources[captureIndex], column++);
 
-            outColumn(column++, TestTimes);
+
+            // Full screen AVG color calculations
+            printTimeGetAvgColor(column++, screenRect);
             printGrabPrecision(column++);
+
+            printTestTimes(column++);
+
             printDwmIsEnabled(column++);
+
             printSwVersion(column++);
             printVersionOS(column++);
 
@@ -231,9 +238,6 @@ namespace speedtests
         // Split tests run
         m_outStream << endl;
 
-        m_outStream.flush();
-
-
         for (int i = 0; i < captureSources.count(); i++)
             delete captureSources[i];
 
@@ -241,41 +245,55 @@ namespace speedtests
             delete captureListeners[i];
     }
 
-    void SpeedTest::captureTime(ICaptureSource * captureSource,
-                            const QList<CaptureListener*> & listeners,
-                            int column)
+    void SpeedTest::printCaptureTime(ICaptureSource * captureSource, int column)
     {
-        // Eval time with math enabled
-        for (int i = 0; i < listeners.count(); i++)
-            listeners[i]->setMathEnabled(true);
-
         m_timer.start();
+
         for (int i = 0; i < TestTimes; i++)
             captureSource->capture();
-        double testTimeMathEnabled = (double)m_timer.elapsed() / TestTimes;
 
+        double captureTimeAvg = (double)m_timer.elapsed() / TestTimes;
 
-        // Eval time with math disabled
-        for (int i = 0; i < listeners.count(); i++)
-            listeners[i]->setMathEnabled(false);
-
-        m_timer.start();
-        for (int i = 0; i < TestTimes; i++)
-            captureSource->capture();
-        double testTimeMathDisabled = (double)m_timer.elapsed() / TestTimes;
-
-        // Format output string
-        QString captureTime = QString("%1 (%2)")
-                              .arg(testTimeMathEnabled, 6, 'f', 2)
-                              .arg(testTimeMathDisabled, 6, 'f', 2);
-
-        outColumn(column, captureTime);
+        outColumn(column, QString("%1").arg(captureTimeAvg, 6, 'f', 2));
     }
 
+    void SpeedTest::printTimeGetAvgColor(int column, QRect screenRect)
+    {
+        CaptureBuffer buff;
+
+        buff.bitsCount = 32;
+        buff.width = screenRect.width();
+        buff.height = screenRect.height();
+        buff.dataLength = buff.width * buff.height * 4;
+
+        buff.data = (uint8_t *)malloc(buff.dataLength);
+
+        if (buff.data == NULL)
+        {
+            qWarning() << Q_FUNC_INFO << "fail malloc(" << buff.dataLength << ")";
+            return;
+        }
+
+        m_timer.start();
+
+        for (int i = 0; i < TestTimes; i++)
+            getAvgColor(buff, Settings::value("GrabPrecision").toInt());
+
+        double captureTimeAvg = (double)m_timer.elapsed() / TestTimes;
+
+        outColumn(column, QString("%1").arg(captureTimeAvg, 6, 'f', 2));
+
+        free(buff.data);
+    }
 
     void SpeedTest::printGrabPrecision(int column)
     {
         outColumn(column, Settings::value("GrabPrecision"));
+    }
+
+    void SpeedTest::printTestTimes(int column)
+    {
+        outColumn(column, TestTimes);
     }
 
     void SpeedTest::printVersionOS(int column)
@@ -358,6 +376,7 @@ namespace speedtests
 
             } else {
                 qWarning() << "Error:" << GetLastError();
+                return "Error";
             }
         }
 #       else
