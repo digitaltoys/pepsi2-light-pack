@@ -26,26 +26,19 @@
 
 
 #include <QtGui>
-#include <iostream>
-#include "MainWindow.hpp"
-
-#include "Settings.hpp"
-#include "version.hpp"
-#include "AmbilightUsb.hpp"
-
 #include <QFileInfo>
+#include <iostream>
 
+#include "MainWindow.hpp"
+#include "version.hpp"
+#include "Settings.hpp"
+#include "AmbilightUsb.hpp"
 #include "debug.hpp"
 
 using namespace std;
 
-
-unsigned debugLevel = 0;
-
-
-QTextStream logStream;
-
-QString logWhileWindowNotInitialized = "";
+int g_debugLevel = 0;
+QTextStream m_logStream;
 
 static void showHelpMessage()
 {
@@ -75,16 +68,20 @@ bool openLogFile(const QString & filePath)
     QFile *logFile = new QFile(filePath);
     QIODevice::OpenMode openFileAppendOrTruncateFlag = QIODevice::Append;
     QFileInfo info(filePath);
-    if(info.size() > 1*1024*1024){
+
+    if (info.size() > 1*1024*1024)
+    {
         cout << "Log file size > 1 Mb. I'm going to clear it. Now!" << endl;
         openFileAppendOrTruncateFlag = QIODevice::Truncate;
     }
-    if(logFile->open(QIODevice::WriteOnly | openFileAppendOrTruncateFlag | QIODevice::Text)){
-        logStream.setDevice(logFile);
-        logStream << endl;
-        logStream << QDateTime::currentDateTime().date().toString("yyyy_MM_dd") << " ";
-        logStream << QDateTime::currentDateTime().time().toString("hh:mm:ss:zzz") << " Lightpack sw" << VERSION_STR << endl;
-    }else{
+
+    if (logFile->open(QIODevice::WriteOnly | openFileAppendOrTruncateFlag | QIODevice::Text))
+    {
+        m_logStream.setDevice(logFile);
+        m_logStream << endl;
+        m_logStream << QDateTime::currentDateTime().date().toString("yyyy_MM_dd") << " ";
+        m_logStream << QDateTime::currentDateTime().time().toString("hh:mm:ss:zzz") << " Lightpack sw" << VERSION_STR << endl;
+    } else {
         cerr << "Error open file for write: " << filePath.toStdString() << endl;
         return false;
     }
@@ -94,30 +91,37 @@ bool openLogFile(const QString & filePath)
 void messageOutput(QtMsgType type, const char *msg)
 {
     QString out = QDateTime::currentDateTime().time().toString("hh:mm:ss:zzz") + " ";
-    switch (type) {
+
+    switch (type)
+    {
     case QtDebugMsg:        
         out.append("Debug: " + QString::fromLocal8Bit(msg));
         cout << out.toStdString() << endl;
         break;
+
     case QtWarningMsg:
         out.append("Warning: " + QString::fromLocal8Bit(msg));
         cerr << out.toStdString() << endl;
         break;
+
     case QtCriticalMsg:
         out.append("Critical: " + QString::fromLocal8Bit(msg));
         cerr << out.toStdString() << endl;
         break;
+
     case QtFatalMsg:
         cerr << "Fatal: " << msg << endl;
         cerr.flush();
 
-        logStream << "Fatal: " << msg << endl;
-        logStream.flush();
+        m_logStream << "Fatal: " << msg << endl;
+        m_logStream.flush();
 
         abort();
-    }    
-    logStream << out << endl;
-    logStream.flush();
+    }
+
+    m_logStream << out << endl;
+
+    m_logStream.flush();
     cerr.flush();
     cout.flush();
 }
@@ -137,8 +141,8 @@ int main(int argc, char **argv)
 
 #ifdef PORTABLE_VERSION
     // Find application directory
-    QString applicationDirPath( argv[0] );
-    QFileInfo fileInfo( applicationDirPath );
+    QString applicationDirPath(argv[0]);
+    QFileInfo fileInfo(applicationDirPath);
     applicationDirPath = fileInfo.absoluteDir().absolutePath();
     cout << "Application directory: " << applicationDirPath.toStdString() << endl;
 #else
@@ -149,62 +153,80 @@ int main(int argc, char **argv)
     QString applicationDirPath = QDir::homePath() + "/.Lightpack";
 #   endif
 
-    QDir dir( applicationDirPath );
-    if(dir.exists() == false){
+    QDir dir(applicationDirPath);
+
+    if (dir.exists() == false)
+    {
         cout << "mkdir " << applicationDirPath.toStdString() << endl;
-        if(dir.mkdir( applicationDirPath ) == false){
-            cerr << "Failed mkdir '" << applicationDirPath.toStdString() << "' for application generated stuff. Exit." << endl;
+        if (dir.mkdir(applicationDirPath) == false)
+        {
+            cerr << "Failed mkdir '" << applicationDirPath.toStdString() << "' "
+                    << "for application generated stuff. Exit." << endl;
             return 3;
         }
     }
 #endif
 
     QString logFilePath = applicationDirPath + "/Lightpack.log";
-    if(openLogFile(logFilePath)){
+
+    if (openLogFile(logFilePath))
+    {
         qDebug() << "Logs file: " << logFilePath;
-    }else{
+    } else {
         cerr << "Log file '" << logFilePath.toStdString() << "' didn't opened. Exit." << endl;
         return 2;
     }
 
-    // Default debug level
-    debugLevel = Debug::LowLevel;
-    bool isSetDebugLevelFromConfig = true;
+    // Set debug level to impossible value to check
+    // whether it will change with console option
+    g_debugLevel = -1;
 
-    if(argc > 1){
-        if(strcmp(argv[1], "--off") == 0){
+    if (argc > 1)
+    {
+        if (strcmp(argv[1], "--off") == 0)
+        {
             AmbilightUsb ambilightUsb;
             ambilightUsb.offLeds();
             return 0;
-        }else if( strcmp(argv[1], "--debug_high") == 0 ){
-            debugLevel = Debug::HighLevel;
-            isSetDebugLevelFromConfig = false;
-
-        }else if( strcmp(argv[1], "--debug_mid") == 0 ){
-            debugLevel = Debug::MidLevel;
-            isSetDebugLevelFromConfig = false;
-
-        }else if( strcmp(argv[1], "--debug_low") == 0 ){
-            debugLevel = Debug::LowLevel;
-            isSetDebugLevelFromConfig = false;
-
-        }else if( strcmp(argv[1], "--debug_zero") == 0 ){
-            debugLevel = Debug::ZeroLevel;
-            isSetDebugLevelFromConfig = false;
-
-        }else{
+        }
+        else if(strcmp(argv[1], "--debug_high") == 0)
+        {
+            g_debugLevel = Debug::HighLevel;
+        }
+        else if(strcmp(argv[1], "--debug_mid") == 0)
+        {
+            g_debugLevel = Debug::MidLevel;
+        }
+        else if(strcmp(argv[1], "--debug_low") == 0)
+        {
+            g_debugLevel = Debug::LowLevel;
+        }
+        else if(strcmp(argv[1], "--debug_zero") == 0)
+        {
+            g_debugLevel = Debug::ZeroLevel;
+        } else {
             showHelpMessage();
             return 1;
         }
     }
 
+    bool isSetDebugLevelFromConfig = false;
 
-    if(debugLevel > 0){
+    if (g_debugLevel == -1)
+    {
+        g_debugLevel = DEBUG_LEVEL_DEFAULT;
+        isSetDebugLevelFromConfig = true;
+    }
+
+
+    if (g_debugLevel > 0)
+    {
         qDebug() << "Build with Qt verison:" << QT_VERSION_STR;
         qDebug() << "Qt version currently in use:" << qVersion();
 
 #ifdef Q_WS_WIN
-        switch( QSysInfo::windowsVersion() ){
+        switch (QSysInfo::windowsVersion())
+        {
         case QSysInfo::WV_NT:       qDebug() << "Windows NT (operating system version 4.0)"; break;
         case QSysInfo::WV_2000:     qDebug() << "Windows 2000 (operating system version 5.0)"; break;
         case QSysInfo::WV_XP:       qDebug() << "Windows XP (operating system version 5.1)"; break;
@@ -214,28 +236,32 @@ int main(int argc, char **argv)
         default:                    qDebug() << "Unknown windows version:" << QSysInfo::windowsVersion();
         }
 #endif
-        }
+    }
 
     // Open last used profile, if profile doesn't exists it will be created
     Settings::Initialize( applicationDirPath, isSetDebugLevelFromConfig );
 
     QString debugLevelStr = "";
-    switch( debugLevel ){
+
+    switch (g_debugLevel)
+    {
     case Debug::HighLevel:  debugLevelStr = "High"; break;
     case Debug::MidLevel:   debugLevelStr = "Mid"; break;
     case Debug::LowLevel:   debugLevelStr = "Low"; break;
     case Debug::ZeroLevel:  debugLevelStr = "Zero"; break;
     }
+
     qDebug() << "Debug level" << debugLevelStr;
 
 
     Q_INIT_RESOURCE(LightpackResources);
 
-    if (!QSystemTrayIcon::isSystemTrayAvailable()) {
-        QMessageBox::critical(0, "Lightpack",
-                              "I couldn't detect any system tray on this system.");
+    if (!QSystemTrayIcon::isSystemTrayAvailable())
+    {
+        QMessageBox::critical(0, "Lightpack", "I couldn't detect any system tray on this system.");
         return 1;
     }
+
     QApplication::setQuitOnLastWindowClosed(false);
 
     MainWindow *window = new MainWindow();   /* Create MainWindow */
