@@ -2,7 +2,7 @@
  * capturemath.cpp
  *
  *  Created on: 7.04.2011
- *     Authors: Mike Shatohin && Michail Karpelyansky
+ *     Authors: Mike Shatohin && Michail Karpelyansky && Timur Sattarov
  *     Project: Lightpack
  *
  *  Lightpack is very simple implementation of the backlight for a laptop
@@ -48,31 +48,29 @@ namespace math
 
     QRgb getAvgColor(const CaptureBuffer & buffer, const int & grabPercent)
     {
-        int index = 0;
+        if (buffer.dataLength < 4)
+            return 0;
+        else if (buffer.dataLength == 4)
+            return qRgb(buffer.data[2], buffer.data[1], buffer.data[0]);
+
         int pixelsCount = 0;
-        int bytesCount = buffer.bitsCount / 8;
+        int bytesPerPixel = buffer.bitsCount / 8;
 
-        unsigned r = 0;
-        unsigned g = 0;
-        unsigned b = 0;
+        // Align buffer last index to 4 pixels (16 bytes)
+        unsigned endIndex = buffer.dataLength - buffer.dataLength % (4 * bytesPerPixel);
 
-        int grabPrecisionY = grabPercent;
+        register unsigned index = 0;
+        register unsigned r = 0, g = 0, b = 0;
 
-        if (grabPrecisionY <= 0)
-            grabPrecisionY = 1;
-
-        for (int y = 0; y < buffer.height; y += grabPrecisionY)
+        while (index < endIndex)
         {
-            for (int x = 0; x < buffer.width; x++)
-            {
-                index = (y * buffer.width + x) * bytesCount;
+            b += buffer.data[index]     + buffer.data[index + 4] + buffer.data[index + 8 ] + buffer.data[index + 12];
+            g += buffer.data[index + 1] + buffer.data[index + 5] + buffer.data[index + 9 ] + buffer.data[index + 13];
+            r += buffer.data[index + 2] + buffer.data[index + 6] + buffer.data[index + 10] + buffer.data[index + 14];
+            //a= buffer.data[index + 3] + buffer.data[index + 7] + buffer.data[index + 11] + buffer.data[index + 15];
 
-                b += buffer.data[index];
-                g += buffer.data[index + 1];
-                r += buffer.data[index + 2];
-
-                pixelsCount++;
-            }
+            pixelsCount += 4;
+            index += bytesPerPixel * 4;
         }
 
         if (pixelsCount != 0)
