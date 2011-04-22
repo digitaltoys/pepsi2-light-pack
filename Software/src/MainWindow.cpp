@@ -796,23 +796,46 @@ void MainWindow::grabSwitchQtWinAPI()
 
 void MainWindow::startSpeedTestsClick()
 {
+    m_isAmbilightOnSavedState = isAmbilightOn;
+
     ambilightOff();
 
-    ui->pushButton_StartTests->setText( "Please wait..." );
+    ui->pushButton_StartTests->setText("Please wait...");
     ui->pushButton_StartTests->setEnabled(false);
     ui->pushButton_StartTests->repaint(); // update right now
 
-    QFuture<void> future = QtConcurrent::run(SpeedTest::run);
+#   if defined(Q_WS_WIN)
 
+    QFuture<void> future = QtConcurrent::run(SpeedTest::run);
     speedTestFutureWatcher.setFuture(future);
+
+#   elif defined(Q_WS_X11)
+
+    // Ubuntu 10.04 X11 Qt grabWindow() capture source problem
+    // Program crashes after a lot of this messages:
+    // Warning: QPixmap: It is not safe to use pixmaps outside the GUI thread
+
+    // Just run speed tests in current GUI thread if X11 window system is used
+    // But this also freezes GUI on some seconds.. this is not good...
+    SpeedTest::run();
+
+    speedTestsFinished();
+
+#   else
+#
+#   error "Window system doesn't supported"
+#
+#   endif /* Q_WS_WIN, Q_WS_X11 */
 }
 
 void MainWindow::speedTestsFinished()
 {
-    ui->pushButton_StartTests->setText( "Start tests" );
+    ui->pushButton_StartTests->setText("Start tests");
     ui->pushButton_StartTests->setEnabled(true);
 
-    ambilightOn();
+    isAmbilightOn = m_isAmbilightOnSavedState;
+
+    startAmbilight();
 }
 
 void MainWindow::openSpeedTestCsv()

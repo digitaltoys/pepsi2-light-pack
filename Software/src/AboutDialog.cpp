@@ -27,7 +27,7 @@
 #include "AboutDialog.hpp"
 #include "ui_AboutDialog.h"
 
-#include "Version.hpp"
+#include "version.hpp"
 
 #include "debug.hpp"
 

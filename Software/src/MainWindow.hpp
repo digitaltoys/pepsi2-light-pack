@@ -125,6 +125,8 @@ private:
     bool isErrorState;
     bool isWinAPIGrab;
 
+    bool m_isAmbilightOnSavedState;
+
     // Evaluated frequency of the PWM generation
     double pwmFrequency;
 
