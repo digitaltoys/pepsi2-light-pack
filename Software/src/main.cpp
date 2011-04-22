@@ -30,18 +30,16 @@
 #include "MainWindow.hpp"
 
 #include "Settings.hpp"
-#include "Version.hpp"
+#include "version.hpp"
 #include "AmbilightUsb.hpp"
 
-//#include <sys/time.h>
-//#include "time.h"
-
 #include <QFileInfo>
+
+#include "debug.hpp"
 
 using namespace std;
 
 
-#include "debug.hpp"
 unsigned debugLevel = 0;
 
 
