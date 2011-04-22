@@ -57,11 +57,11 @@ namespace speedtests
 
         static void printHeader();
         static void startTests();
-        static void captureTime(ICaptureSource * captureSource,
-                                const QList<CaptureListener*> & listeners,
-                                int column);
+        static void printCaptureTime(ICaptureSource * captureSource, int column);
 
+        static void printTimeGetAvgColor(int column, QRect screenRect);
         static void printGrabPrecision(int column);
+        static void printTestTimes(int column);
         static void printVersionOS(int column);
         static void printDwmIsEnabled(int column);
         static void printDateTime(int column);
@@ -87,20 +87,13 @@ namespace speedtests
     class CaptureListener : public ICaptureListenerCallback
     {
     public:
-        CaptureListener()
-        {
-            m_grabPrecision = Settings::value("GrabPercent").toInt();
-        }
-
         bool isListenerCallbackEnabled()
         {
             return true;
         }
 
-        void listenerBufferCallback(const CaptureBuffer & buffer)
+        void listenerBufferCallback(const CaptureBuffer &)
         {
-            if (m_isMathEnabled)
-                getAvgColor(buffer, m_grabPrecision);
         }
 
         CaptureRect getWidgetRect()
@@ -120,14 +113,8 @@ namespace speedtests
             m_rect = r;
         }
 
-        void setMathEnabled(bool state)
-        {
-            m_isMathEnabled = state;
-        }
-
     private:
         QRect m_rect;
-        bool m_isMathEnabled;
         int m_grabPrecision;
     };
 }
