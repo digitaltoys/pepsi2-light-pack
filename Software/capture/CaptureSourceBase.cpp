@@ -215,7 +215,7 @@ namespace capture
                 //if (it->buffer.data == NULL)
                 //    todo warninig "data is empty"
 
-                //it->callback->listenerBufferCallback(it->buffer);
+                it->callback->listenerBufferCallback(it->buffer);
             }
         }
 
