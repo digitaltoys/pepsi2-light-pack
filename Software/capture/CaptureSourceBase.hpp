@@ -46,6 +46,7 @@ namespace capture
         ListenerInfo()
             : callback(NULL)
         {
+            buffer.data = NULL;
         }
     };
 

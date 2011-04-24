@@ -62,7 +62,7 @@ namespace capture
         buff.height = 1;
         buff.bitsCount = m_bitsCount;
         buff.dataLength = buff.width * buff.height * bytesCount;
-        buff.data = (uint8_t *)malloc(buff.dataLength);
+        buff.data = new uint8_t[buff.dataLength];
         // todo
         buff.data[0] = qBlue(color);
         buff.data[1] = qGreen(color);
