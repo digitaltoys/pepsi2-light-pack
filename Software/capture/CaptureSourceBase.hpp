@@ -47,13 +47,6 @@ namespace capture
             : callback(NULL)
         {
         }
-
-        // todo? move free data to CaptureBuffer type
-        ~ListenerInfo()
-        {
-            if (buffer.data != NULL)
-                free(buffer.data);
-        }
     };
 
     class CaptureSourceBase : ICaptureSource
