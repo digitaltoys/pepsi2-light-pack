@@ -37,7 +37,7 @@ namespace capture
     CaptureSourceWindowsWinApi::CaptureSourceWindowsWinApi()
         : CaptureSourceBase()
     {
-        m_selfName = "WinAPI";
+        m_name = "WinAPI";
     }
 
     // CaptureSourceBase

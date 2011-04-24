@@ -36,7 +36,7 @@ namespace capture
     CaptureSourceQtGrabWindow::CaptureSourceQtGrabWindow()
         : CaptureSourceBase()
     {
-        m_selfName = "Qt";
+        m_name = "Qt";
     }
 
     void CaptureSourceQtGrabWindow::fillData()
@@ -52,13 +52,12 @@ namespace capture
             rect.top,
             rect.width,
             rect.height);
-        QPixmap scaledPixel = pixel.scaled(1,1, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        QPixmap scaledPixel = pixel.scaled(1, 1, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         QImage image = scaledPixel.toImage();
         QRgb color = image.pixel(0,0);
         int bytesCount = m_bitsCount / 8;
 
         CaptureBuffer &buff = *buffer;
-
         buff.width = 1;
         buff.height = 1;
         buff.bitsCount = m_bitsCount;

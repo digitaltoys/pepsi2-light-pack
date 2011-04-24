@@ -166,7 +166,7 @@ namespace speedtests
 
             printDateTime(column++);
 
-            outColumn(column++, captureSources[captureIndex]->name());
+            outColumn(column++, captureSources[captureIndex]->getName());
 
             // -----------------------------------------------------------------
             // Test capture speed on one widget
