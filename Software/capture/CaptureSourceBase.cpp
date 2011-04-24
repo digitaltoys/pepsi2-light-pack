@@ -36,7 +36,7 @@ namespace capture
         uint8_t *data = buffer.data;
 
         if (data != NULL)
-            free(data);
+            delete[] data;
     }
 
     void CaptureSourceBase::updateBufferForRect(const CaptureRect &rect, CaptureBuffer *buffer)
@@ -45,13 +45,13 @@ namespace capture
         //    todo qWarning()
 
         if (buffer->data != NULL)
-            free(buffer->data);
+            delete[] buffer->data;
 
         buffer->width = rect.width;
         buffer->height = rect.height;
         buffer->bitsCount = 32; // todo m_bitsCount or other value?
         buffer->dataLength = getDataLength(buffer->width, buffer->height, buffer->bitsCount);
-        buffer->data = (uint8_t *)malloc(buffer->dataLength);
+        buffer->data = new uint8_t[buffer->dataLength];
     }
 
     CaptureSourceBase::CaptureSourceBase()
@@ -107,10 +107,10 @@ namespace capture
         if (m_dataLength != newDataLength)
         {
             if (m_data != NULL)
-                free(m_data);
+                delete[] m_data;
 
             m_dataLength = newDataLength;
-            m_data = (uint8_t *)malloc(m_dataLength);
+            m_data = new uint8_t[m_dataLength];
         }
     }
 
@@ -152,7 +152,7 @@ namespace capture
 
         if (m_data != NULL)
         {
-            free(m_data);
+            delete[] m_data;
             m_data = NULL;
         }
     }

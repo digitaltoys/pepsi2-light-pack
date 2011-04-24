@@ -133,10 +133,7 @@ void GrabManager::initLedWidgets()
     for (int i = 0; i < LEDS_COUNT; i++)
     {
         m_grabWidgets << new GrabWidget(i, this);
-    }
 
-    for (int i = 0; i < LEDS_COUNT; i++)
-    {
         connect(m_grabWidgets[i], SIGNAL(resizeOrMoveCompleted(int)), this, SLOT(setResizeOrMovingFalse()));
         connect(m_grabWidgets[i], SIGNAL(resizeOrMoveStarted()), this, SLOT(setResizeOrMovingTrue()));
         // todo const_cast
@@ -242,7 +239,6 @@ void GrabManager::updateLedsColorsIfChanged()
 
     clearColorsNew();
 
-    // todo: what todo?
     if (m_captureSource != 0)
     {
         m_captureSource->capture();
@@ -254,7 +250,6 @@ void GrabManager::updateLedsColorsIfChanged()
             setAvgColor(m_colorsNew);
 
         checkMinimumLevelOfSensitivity(m_colorsNew, m_minLevelOfSensivity);
-
         updateSmoothSteps(m_colorsCurrent, m_colorsNew);
 
         bool isColorsChanged = haveChangedColors(m_colorsCurrent, m_colorsNew);
@@ -426,8 +421,7 @@ void GrabManager::setMinLevelOfSensivity(int value)
 void GrabManager::setGrabPrecision(int value)
 {
     for (int i = 0; i < m_grabWidgets.count(); i++)
-    {
         m_grabWidgets[i]->setGrabPrecision(value);
-    }
+
     Settings::setValue("GrabPrecision", value);
 }

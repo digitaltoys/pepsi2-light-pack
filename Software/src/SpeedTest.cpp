@@ -266,7 +266,7 @@ namespace speedtests
         buff.height = screenRect.height();
         buff.dataLength = buff.width * buff.height * 4;
 
-        buff.data = (uint8_t *)malloc(buff.dataLength);
+        buff.data = new uint8_t[buff.dataLength];
 
         if (buff.data == NULL)
         {
@@ -283,7 +283,7 @@ namespace speedtests
 
         outColumn(column, QString("%1").arg(captureTimeAvg, 6, 'f', 2));
 
-        free(buff.data);
+        delete[] buff.data;
     }
 
     void SpeedTest::printGrabPrecision(int column)
