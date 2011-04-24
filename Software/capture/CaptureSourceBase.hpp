@@ -26,6 +26,7 @@
 
 #pragma once
 
+#include <cstdlib>
 #include <list>
 
 #include "capture.hpp"
@@ -40,50 +41,39 @@ namespace capture
     {
         ICaptureListenerCallback *callback;
         CaptureRect rect;
+        CaptureBuffer buffer;
 
         ListenerInfo()
             : callback(NULL)
         {
         }
+
+        // todo? move free data to CaptureBuffer type
+        ~ListenerInfo()
+        {
+            if (buffer.data != NULL)
+                free(buffer.data);
+        }
     };
-
-    //struct CaptureScreenInfo
-    //{
-    //    bool alreadyCaptured;
-
-    //    CaptureRect rect;
-
-    //    CaptureBuffer buffer;
-
-    //    //CaptureScreenInfo() : rect(), buffer(), alreadyCaptured(false) { }
-
-    ////    int getId() {
-    ////        return rect.screenId;
-    ////    }
-
-    ////    void setId( int id ) {
-    ////        rect.screenId = id;
-    ////    }
-    //};
 
     class CaptureSourceBase : ICaptureSource
     {
+    private:
+        void freeBufferData(CaptureBuffer buffer);
+        void updateBufferForRect(const CaptureRect &rect, CaptureBuffer *buffer);
     protected:
         // todo move to private
         typedef std::list<ListenerInfo>::iterator ListenerInfoIterator;
         typedef std::list<ListenerInfo>::const_iterator ListenerInfoConstIterator;
 
+        QString m_name;
         std::list<ListenerInfo> m_listeners;
         CaptureRect m_rect;
         int m_bitsCount;
         int m_dataLength;
         uint8_t *m_data;
-        QString m_selfName;
 
         CaptureSourceBase();
-
-        virtual void fillData() = 0;
-        virtual void fillBufferForRect(const CaptureRect &rect, CaptureBuffer *buffer) = 0;
 
         void recalculateRect();
         int getDataLength(int width, int height, int bitsCount);
@@ -93,9 +83,11 @@ namespace capture
             const int &bitsCount,
             const CaptureRect &fromRect, const uint8_t *fromData,
             const CaptureRect &toRect, uint8_t *toData) const;
+
+        virtual void fillData() = 0;
+        virtual void fillBufferForRect(const CaptureRect &rect, CaptureBuffer *buffer) = 0;
     public:
         ~CaptureSourceBase();
-
 
     // ICaptureSource
     public:
@@ -107,10 +99,7 @@ namespace capture
         virtual void unsubscribeListener(ICaptureListenerCallback *callback);
         virtual void unsubscribeAllListeners();
 
-        virtual const QString & name()
-        {
-            return m_selfName;
-        }
+        virtual const QString & getName();
     };
 }
 }

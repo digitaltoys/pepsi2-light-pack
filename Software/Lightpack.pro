@@ -80,11 +80,8 @@ win32 {
 
     # TODO: use #ifdef #endif dude!
     SOURCES += hidapi/windows/hid.cpp
-    # Windows version using WinAPI + GDI for grab colors
-    LIBS    += -lgdi32
 
-    LIBS    += -ld3d9
-    INCLUDEPATH += "C:/Program Files/Microsoft DirectX SDK (June 2010)/Include"
+    LIBS    += -lgdi32 -ld3d9
 }
 
 unix:!macx{
@@ -139,7 +136,8 @@ HEADERS += hidapi/hidapi.h \
     capture/CaptureSourceWindowsDirect3D9.hpp \
     capture/CaptureSourceWindowsWinApi.hpp \
     capture/capturemath.hpp \
-    capture/CaptureSourceWindowsDWM.hpp
+    capture/CaptureSourceWindowsDWM.hpp \
+    dwmapi.hpp
 FORMS += src/MainWindow.ui \
     src/AboutDialog.ui \
     src/GrabWidget.ui

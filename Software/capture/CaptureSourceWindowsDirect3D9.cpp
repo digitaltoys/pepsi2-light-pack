@@ -36,10 +36,10 @@ namespace capture
 {
     // todo move body to initialize method
     CaptureSourceWindowsDirect3D9::CaptureSourceWindowsDirect3D9()
-        : CaptureSourceBase(),
-        m_d3D(NULL), m_d3Device(NULL), m_surface(NULL)
+        :   CaptureSourceBase(),
+            m_d3D(NULL), m_d3Device(NULL), m_surface(NULL)
     {
-        m_selfName = "Direct3D9";
+        m_name = "Direct3D9";
 
         if ((m_d3D = Direct3DCreate9(D3D_SDK_VERSION)) == NULL)
         {

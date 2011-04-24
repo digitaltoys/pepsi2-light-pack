@@ -7,9 +7,10 @@ namespace lightpack
 namespace capture
 {
     CaptureSourceWindowsDWM::CaptureSourceWindowsDWM()
-        : CaptureSourceBase()
+        :   CaptureSourceBase(),
+            m_rectHWnd(NULL)
     {
-        m_selfName = "DWM";
+        m_name = "DWM";
     }
 
     // CaptureSourceBase
@@ -20,7 +21,6 @@ namespace capture
 
     void CaptureSourceWindowsDWM::fillBufferForRect(const CaptureRect &rect, CaptureBuffer *buffer)
     {
-        defaultFillBufferForRect(rect, buffer);
     }
 }
 }

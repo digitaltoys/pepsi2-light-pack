@@ -27,19 +27,39 @@
 #include "debug.hpp"
 #include "CaptureSourceBase.hpp"
 
-//#include <QApplication>
-//#include <QDesktopWidget>
-
-//#define WINVER 0x0500 /* Windows2000 for MonitorFromWindow(..) func *//*
-//#include <windows.h>
-
 namespace lightpack
 {
 namespace capture
 {
+    void CaptureSourceBase::freeBufferData(CaptureBuffer buffer)
+    {
+        uint8_t *data = buffer.data;
+
+        if (data != NULL)
+            free(data);
+    }
+
+    void CaptureSourceBase::updateBufferForRect(const CaptureRect &rect, CaptureBuffer *buffer)
+    {
+        //if (CaptureBuffer == NULL)
+        //    todo qWarning()
+
+        if (buffer->data != NULL)
+            free(buffer->data);
+
+        buffer->width = rect.width;
+        buffer->height = rect.height;
+        buffer->bitsCount = 32; // todo m_bitsCount or other value?
+        buffer->dataLength = getDataLength(buffer->width, buffer->height, buffer->bitsCount);
+        buffer->data = (uint8_t *)malloc(buffer->dataLength);
+    }
+
     CaptureSourceBase::CaptureSourceBase()
-        : m_bitsCount(0), m_dataLength(0), m_data(NULL), m_selfName("Base")
-    {        
+        :   m_name("Base"),
+            m_bitsCount(0),
+            m_dataLength(0),
+            m_data(NULL)
+    {
     }
 
     void CaptureSourceBase::recalculateRect()
@@ -94,18 +114,10 @@ namespace capture
         }
     }
 
+    // todo? remove this method
     void CaptureSourceBase::defaultFillBufferForRect(const CaptureRect &rect, CaptureBuffer *buffer) const
     {
-        CaptureBuffer &buff = *buffer;
-        int bytesCount = m_bitsCount / 8;
-
-        buff.width = rect.width;
-        buff.height = rect.height;
-        buff.bitsCount = m_bitsCount;
-        buff.dataLength = buff.width * buff.height * bytesCount;
-        buff.data = (uint8_t *)malloc(buff.dataLength);
-
-        copyToSubBufferData(m_bitsCount, m_rect, m_data, rect, (*buffer).data);
+        copyToSubBufferData(m_bitsCount, m_rect, m_data, rect, buffer->data);
     }
 
     void CaptureSourceBase::copyToSubBufferData(
@@ -136,6 +148,8 @@ namespace capture
 
     CaptureSourceBase::~CaptureSourceBase()
     {
+        unsubscribeAllListeners();
+
         if (m_data != NULL)
         {
             free(m_data);
@@ -184,27 +198,24 @@ namespace capture
         {
             if (it->callback->isListenerCallbackEnabled())
             {
-                CaptureBuffer buffer;
-                fillBufferForRect(it->rect, &buffer);
+                defaultFillBufferForRect(it->rect, &it->buffer);
 
-                //if (buffer.width == 0)
+                //if (it->buffer.width == 0)
                 // todo warning "Width is 0"
 
-                //if (buffer.height == 0)
+                //if (it->buffer.height == 0)
                 // todo warning "Height is 0"
 
-                //if (buffer.bitsCount == 0)
+                //if (it->buffer.bitsCount == 0)
                 // todo warning "Bits count is 0"
 
-                //if (buffer.dataLength == 0)
+                //if (it->buffer.dataLength == 0)
                 //    todo warning "Data length is 0"
 
-                //if (buffer.data == NULL)
+                //if (it->buffer.data == NULL)
                 //    todo warninig "data is empty"
 
-                it->callback->listenerBufferCallback(buffer);
-
-                free(buffer.data);
+                //it->callback->listenerBufferCallback(it->buffer);
             }
         }
 
@@ -225,6 +236,7 @@ namespace capture
         ListenerInfo info;
         info.callback = callback;
         info.rect = rect;
+        updateBufferForRect(info.rect, &info.buffer);
 
         m_listeners.push_back(info);
 
@@ -256,6 +268,7 @@ namespace capture
             if (it->callback == callback)
             {
                 it->rect = rect;
+                updateBufferForRect(rect, &(it->buffer));
                 break;
             }
         }
@@ -275,6 +288,7 @@ namespace capture
         {
             if (it->callback == callback)
             {
+                freeBufferData(it->buffer);
                 m_listeners.erase(it);
                 break;
             }
@@ -285,8 +299,16 @@ namespace capture
 
     void CaptureSourceBase::unsubscribeAllListeners()
     {
+        for (ListenerInfoIterator it = m_listeners.begin(); it != m_listeners.end(); it++)
+            freeBufferData(it->buffer);
+
         m_listeners.clear();
         recalculateRect();
+    }
+
+    const QString & CaptureSourceBase::getName()
+    {
+        return m_name;
     }
 }
 }
