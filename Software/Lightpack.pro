@@ -136,8 +136,7 @@ HEADERS += hidapi/hidapi.h \
     capture/CaptureSourceWindowsDirect3D9.hpp \
     capture/CaptureSourceWindowsWinApi.hpp \
     capture/capturemath.hpp \
-    capture/CaptureSourceWindowsDWM.hpp \
-    dwmapi.hpp
+    capture/CaptureSourceWindowsDWM.hpp
 FORMS += src/MainWindow.ui \
     src/AboutDialog.ui \
     src/GrabWidget.ui
