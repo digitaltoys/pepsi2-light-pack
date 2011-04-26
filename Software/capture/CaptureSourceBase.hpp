@@ -26,7 +26,6 @@
 
 #pragma once
 
-#include <cstdlib>
 #include <list>
 
 #include "capture.hpp"
@@ -46,7 +45,6 @@ namespace capture
         ListenerInfo()
             : callback(NULL)
         {
-            buffer.data = NULL;
         }
     };
 
