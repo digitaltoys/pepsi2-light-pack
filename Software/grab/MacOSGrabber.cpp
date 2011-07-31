@@ -78,7 +78,7 @@ CGImageRef MacOSGrabber::openGlGrab()
     CGLError err = CGLChoosePixelFormat( attribs, &pixelFormatObj, (GLint *)&numPixelFormats );
     DEBUG_OUT << "CGLChoosePixelFormat error: " << err;
     if ( pixelFormatObj == NULL ) {
-        DEBUG_OUT << "no fullscreen context support"
+        DEBUG_OUT << "no fullscreen context support";
         return NULL;
     }
     CGLCreateContext( pixelFormatObj, NULL, &glContextObj ) ;
