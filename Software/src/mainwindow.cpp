@@ -69,7 +69,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ledDevice = LedDeviceFactory::create(this, Settings::valueMain("IsAlienFxMode").toBool());
 
-    grabManager = new GrabManager(new QtGrabber());
+    //experimental branch. default grabber is MacOSGrabber
+    grabManager = new GrabManager(new MacOSGrabber());
 
     aboutDialog = new AboutDialog(this);
 
@@ -857,26 +858,28 @@ void MainWindow::updatePwmFrequency()
 
 void MainWindow::onGrabModeChanged()
 {
-    DEBUG_LOW_LEVEL << Q_FUNC_INFO << "GrabMode" << getGrabMode();
-    IGrabber * grabber;
-    switch (getGrabMode())
-    {
-#ifdef Q_WS_X11
-    case X11GrabMode:
-        grabber = new X11Grabber();
-        break;
-#endif
-#ifdef Q_WS_WIN
-    case WinAPIGrabMode:
-        grabber = new WinAPIGrabber();
-        break;
-#endif
-    default:
-        grabber = new QtGrabber();
-        break;
-    }
-    Settings::setGrabMode(getGrabMode());
-    grabManager->setGrabber(grabber);
+// experimental branch. we have disabled all grabbers except MacOSGrabber();
+// ------------------------------------------
+//    DEBUG_LOW_LEVEL << Q_FUNC_INFO << "GrabMode" << getGrabMode();
+//    IGrabber * grabber;
+//    switch (getGrabMode())
+//    {
+//#ifdef Q_WS_X11
+//    case X11GrabMode:
+//        grabber = new X11Grabber();
+//        break;
+//#endif
+//#ifdef Q_WS_WIN
+//    case WinAPIGrabMode:
+//        grabber = new WinAPIGrabber();
+//        break;
+//#endif
+//    default:
+//        grabber = new MacOSGrabber();
+//        break;
+//    }
+//    Settings::setGrabMode(getGrabMode());
+//    grabManager->setGrabber(grabber);
 }
 
 // ----------------------------------------------------------------------------

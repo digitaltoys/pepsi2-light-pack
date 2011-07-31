@@ -387,6 +387,8 @@ void GrabManager::ambilight()
 #endif    
 
     QList<QRgb> widgetsColors = grabber->grabWidgetsColors(ledWidgets);
+    if (widgetsColors.size() != ledWidgets.size())
+        return;
     for(int ledIndex=0; ledIndex<LEDS_COUNT; ledIndex++){
         if(ledWidgets[ledIndex]->isGrabEnabled()){
             QRgb rgb = widgetsColors[ledIndex];

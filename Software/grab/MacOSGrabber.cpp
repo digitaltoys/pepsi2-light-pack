@@ -34,8 +34,11 @@ QList<QRgb> MacOSGrabber::grabWidgetsColors(QList<MoveMeWidget *> &widgets)
     CGGetActiveDisplayList(32, displays, &displayCount);
     CGRect bounds = CGDisplayBounds(displays[0]);
     CGImageRef image = openGlGrab();//CGDisplayCreateImageForRect(displays[0], bounds);
-    QPixmap pixmap = QPixmap::fromMacCGImageRef(image);
     QList<QRgb> result;
+    if (image == NULL) {
+        return result;
+    }
+    QPixmap pixmap = QPixmap::fromMacCGImageRef(image);
     for(int i = 0; i < widgets.size(); i++) {
         result.append(getColor(pixmap, widgets[i]));
     }
@@ -73,13 +76,17 @@ CGImageRef MacOSGrabber::openGlGrab()
 
     /* Build a full-screen GL context */
     CGLError err = CGLChoosePixelFormat( attribs, &pixelFormatObj, (GLint *)&numPixelFormats );
-    DEBUG_OUT << err;
-    if ( pixelFormatObj == NULL )    // No full screen context support
+    DEBUG_OUT << "CGLChoosePixelFormat error: " << err;
+    if ( pixelFormatObj == NULL ) {
+        DEBUG_OUT << "no fullscreen context support"
         return NULL;
+    }
     CGLCreateContext( pixelFormatObj, NULL, &glContextObj ) ;
     CGLDestroyPixelFormat( pixelFormatObj ) ;
-    if ( glContextObj == NULL )
+    if ( glContextObj == NULL ) {
+        DEBUG_OUT << "no GL context"
         return NULL;
+    }
 
 
     CGLSetCurrentContext( glContextObj ) ;
