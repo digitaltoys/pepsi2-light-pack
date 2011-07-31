@@ -84,7 +84,7 @@ CGImageRef MacOSGrabber::openGlGrab()
     CGLCreateContext( pixelFormatObj, NULL, &glContextObj ) ;
     CGLDestroyPixelFormat( pixelFormatObj ) ;
     if ( glContextObj == NULL ) {
-        DEBUG_OUT << "no GL context"
+        DEBUG_OUT << "no GL context";
         return NULL;
     }
 
